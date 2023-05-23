@@ -1,7 +1,7 @@
 import { migrate } from "drizzle-orm/vercel-postgres/migrator";
-import type { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
+import type { NeonDatabase } from "drizzle-orm/neon-serverless";
 
-const runMigrations = async (db: VercelPgDatabase) => {
+const runMigrations = async (db: NeonDatabase) => {
   await migrate(db, {
     migrationsFolder: "./src/server/db/migrations",
   });
