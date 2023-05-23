@@ -1,11 +1,34 @@
+import jwt from "jsonwebtoken";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type NextAuthOptions,
   type DefaultSession,
+  type NextAuthOptions,
 } from "next-auth";
+import AppleProvider from "next-auth/providers/apple";
 import DiscordProvider from "next-auth/providers/discord";
 import { env } from "~/env.mjs";
+import db from "~/server/db";
+import { DrizzleAdapterPg } from "~/server/db/adapter";
+import { authSchema } from "./db/schema";
+
+const generateAppleSecret = () =>
+  jwt.sign(
+    {
+      iat: new Date().getTime() / 1000,
+    },
+    `${env.APPLE_PRIVATE_KEY}`,
+    {
+      audience: "https://appleid.apple.com",
+      issuer: env.APPLE_TEAM_ID,
+      expiresIn: env.NODE_ENV === "development" ? "24h" : "2h",
+      header: {
+        alg: "ES256",
+        kid: env.APPLE_KEY_ID,
+      },
+      subject: env.APPLE_SERVICE_ID,
+    }
+  );
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -43,7 +66,13 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
+  adapter: DrizzleAdapterPg(db, authSchema),
   providers: [
+    AppleProvider({
+      id: "apple",
+      clientId: env.APPLE_SERVICE_ID,
+      clientSecret: generateAppleSecret(),
+    }),
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
@@ -58,6 +87,18 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  // For SiwA
+  cookies: {
+    pkceCodeVerifier: {
+      name: "next-auth.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+      },
+    },
+  },
 };
 
 /**

@@ -22,6 +22,14 @@ export const env = createEnv({
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),
+    // Apple Provider Vars
+    APPLE_KEY_ID: z.string(),
+    APPLE_PRIVATE_KEY: z.string(),
+    APPLE_SERVICE_ID: z.string(),
+    APPLE_TEAM_ID: z.string(),
+    // Database Vars
+    POSTGRES_LOGGING: z.enum(["true", "false"]),
+    POSTGRES_URL: z.string().url(),
   },
 
   /**
@@ -43,6 +51,12 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    POSTGRES_LOGGING: process.env.POSTGRES_LOGGING,
+    POSTGRES_URL: process.env.POSTGRES_URL,
+    APPLE_KEY_ID: process.env.APPLE_KEY_ID,
+    APPLE_PRIVATE_KEY: process.env.APPLE_PRIVATE_KEY,
+    APPLE_SERVICE_ID: process.env.APPLE_SERVICE_ID,
+    APPLE_TEAM_ID: process.env.APPLE_TEAM_ID,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
 });

@@ -18,6 +18,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 
 import { getServerAuthSession } from "~/server/auth";
+import db from "~/server/db";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -36,6 +37,7 @@ type CreateContextOptions = {
 const createInnerTRPCContext = ({ session }: CreateContextOptions) => {
   return {
     session,
+    db,
   };
 };
 
