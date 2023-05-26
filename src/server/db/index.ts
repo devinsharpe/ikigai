@@ -1,10 +1,9 @@
 import { drizzle } from "drizzle-orm/neon-serverless";
-// import { sql } from "@vercel/postgres";
-import runMigrations from "./migrate";
 import chalk from "chalk";
 import type { Logger } from "drizzle-orm";
 import { env } from "~/env.mjs";
 import { neonConfig, Pool } from "@neondatabase/serverless";
+import { migrate } from "drizzle-orm/neon-serverless/migrator";
 
 const logger: Logger = {
   logQuery: function (query, params) {
@@ -38,10 +37,14 @@ const db = drizzle(new Pool({ connectionString: env.POSTGRES_URL }), {
   logger: env.POSTGRES_LOGGING === "true" ? logger : false,
 });
 
-void runMigrations(db);
-
-// void runMigrations(db);
-
 export default db;
+
+migrate(db, { migrationsFolder: "./src/server/db/migrations/" })
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  .then(() => {})
+  .catch((err) => {
+    console.log(err);
+    console.log("migrations failed");
+  });
 
 export type DbClient = typeof db;
