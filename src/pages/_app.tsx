@@ -9,13 +9,13 @@ import ThemeProvider from "~/components/providers/theme";
 import Navbar from "~/components/ui/navbar";
 import React from "react";
 import type { NextComponentType, NextPageContext } from "next";
+import { Provider } from "jotai";
 
 const Main: React.FC<{
   Component: NextComponentType<NextPageContext, unknown, unknown>;
   pageProps: Record<string, unknown>;
 }> = ({ Component, pageProps }) => {
   const session = useSession();
-  console.log(session);
   return (
     <>
       <Component {...pageProps} />
@@ -43,7 +43,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <>
       <SessionProvider session={session}>
-        <Main Component={Component} pageProps={pageProps} />
+        <Provider>
+          <Main Component={Component} pageProps={pageProps} />
+        </Provider>
       </SessionProvider>
       <ThemeProvider />
     </>
