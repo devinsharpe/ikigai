@@ -11,13 +11,11 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-} from "~/components/shadcn/card";
-import { CardTitle } from "~/components/shadcn/card";
+} from "@sh/card";
+import { CardTitle } from "@sh/card";
 import { ArrowRight, LogIn, LogOut } from "lucide-react";
-import { Separator } from "~/components/shadcn/separator";
-import { Button } from "~/components/shadcn/button";
-import Navbar from "~/components/ui/navbar";
-import { type Session } from "next-auth";
+import { Separator } from "@sh/separator";
+import { Button } from "@sh/button";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,7 +40,6 @@ const Home: NextPage = () => {
           }
         `}
       </style>
-      <Navbar session={session as unknown as Session} />
       <main className="flex min-h-screen flex-col items-center justify-center">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <Card className="max-w-lg">
