@@ -6,6 +6,7 @@ import { config } from "@root/drizzle.config.js";
 const sql = new pg.Pool({
   connectionString: config.dbCredentials.connectionString,
   max: 1,
+  ssl: process.env.NODE_ENV !== "development",
 });
 const db = drizzle(sql);
 
