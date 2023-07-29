@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RadixCollapsible from '@radix-ui/react-collapsible';
-import { FoldVertical, X } from 'lucide-react';
+import { FoldVertical, UnfoldVertical } from 'lucide-react';
 import { cn } from '~/lib/cn';
 
 export function CollapsibleActionButton(props: RadixCollapsible.PrimitiveButtonProps) {
@@ -44,7 +44,7 @@ function Collapsible({ actions, elements, isOpen, onOpenChange, previewCount = 1
             )
           }
           <RadixCollapsible.Trigger asChild>
-            <CollapsibleActionButton className="p-2 rounded-lg hover:bg-zinc-100">{isOpen ? <X /> : <FoldVertical />}</CollapsibleActionButton>
+            <CollapsibleActionButton className="p-2 rounded-lg hover:bg-zinc-100">{isOpen ? <FoldVertical /> : <UnfoldVertical />}</CollapsibleActionButton>
           </RadixCollapsible.Trigger>
         </div>
       </div>
