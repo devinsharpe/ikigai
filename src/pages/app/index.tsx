@@ -1,6 +1,15 @@
-import { ChevronDown, Home, LayoutDashboard, Plus, Search } from "lucide-react";
+import { useOrganization, useOrganizationList } from "@clerk/nextjs";
+import { Home, LayoutDashboard, Plus, Search } from "lucide-react";
+import { useState } from "react";
+import Collapsible, { CollapsibleActionButton, CollapsibleItem } from "~/components/collapsible";
 
 function AppHomePage() {
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+  const organization = useOrganization();
+  const organizationList = useOrganizationList();
+  console.log(organization)
+  console.log(organizationList)
+
   return (
     <>
       <form className="w-full sticky top-16 p-2 bg-white">
@@ -22,32 +31,47 @@ function AppHomePage() {
       </form>
       <main className="container mx-auto flex flex-col gap-4 min-h-screen flex-col pt-20 px-2">
         <div className="flex flex-col gap-2">
-          <div className="font-bold tracking-wide text-2xl text-zinc-800 flex items-center justify-between gap-2 px-2">
-            <h3>Projects</h3>
-            <div className="flex items-center gap-4">
-              <Plus />
-              <ChevronDown />
-            </div>
-          </div>
-          <ul className="rounded-lg border divide-y bg-zinc-50">
-            <li className="py-2 px-4 flex items-center gap-2">
-              <span>🎯</span>
-              <span className="font-semibold">DevSharpe</span>
-              <span className="bg-zinc-200 rounded-lg ml-auto px-3 py-1 text-sm">7</span>
-            </li>
-            <li className="py-2 px-4 flex items-center gap-2">
-              <span>📒</span>
-              <span className="font-semibold">Day Job</span>
-              <span className="bg-zinc-200 rounded-lg ml-auto px-3 py-1 text-sm">11</span>
-            </li>
-            <li className="py-2 px-4 flex items-center gap-2">
-              <span>❄️</span>
-              <span className="font-semibold">Personal</span>
-              <span className="bg-zinc-200 rounded-lg ml-auto px-3 py-1 text-sm">3</span>
-            </li>
-          </ul>
-        </div>
-      </main>
+          <Collapsible
+            isOpen={isProjectsOpen}
+            onOpenChange={() => setIsProjectsOpen(!isProjectsOpen)}
+            previewCount={2}
+            actions={[
+              <CollapsibleActionButton title="New Project" key="project-new" onClick={() => console.log("hello world")}>
+                <>
+                  <Plus />
+                  <span className="sr-only">New Project</span>
+                </>
+              </CollapsibleActionButton>
+            ]}
+            elements={[
+              (
+                <CollapsibleItem key="0">
+                  <>
+                    <span>🎯</span>
+                    <span className="font-semibold">DevSharpe</span>
+                    <span className="bg-zinc-200 rounded-lg ml-auto px-3 py-1 text-sm">7</span>
+                  </>
+                </CollapsibleItem>
+              ),
+              (<CollapsibleItem key="1">
+                <>
+                  <span>📒</span>
+                  <span className="font-semibold">Day Job</span>
+                  <span className="bg-zinc-200 rounded-lg ml-auto px-3 py-1 text-sm">11</span>
+                </>
+              </CollapsibleItem>),
+              (<CollapsibleItem key="2">
+                <>
+                  <span>❄️</span>
+                  <span className="font-semibold">Personal</span>
+                  <span className="bg-zinc-200 rounded-lg ml-auto px-3 py-1 text-sm">3</span>
+                </>
+              </CollapsibleItem >)
+            ]}
+            title="Projects"
+          />
+        </div >
+      </main >
     </>
   )
 }
