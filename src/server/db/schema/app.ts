@@ -10,7 +10,7 @@ export const projects = pgTable("projects", {
   description: varchar("description"),
   createdAt: timestamp("createdAt", { withTimezone: true, mode: "string" }).defaultNow(),
   createdBy: varchar("createdBy").notNull(),
-  organization: varchar("organization").notNull(),
+  organization: varchar("organization"),
   isActive: boolean("isActive").default(true)
 });
 export type Project = InferModel<typeof projects, "select">;
@@ -27,7 +27,7 @@ export const tasks = pgTable("tasks", {
   createdAt: timestamp("createdAt", { withTimezone: true, mode: "string" }).defaultNow(),
   createdBy: varchar("createdBy").notNull(),
   projectId: varchar("projectId", idConfig).notNull().references((): AnyPgColumn => projects.id),
-  organization: varchar("organization").notNull(),
+  organization: varchar("organization"),
   assignedTo: varchar("assignedTo").notNull(),
   assignedBy: varchar("assignedBy").notNull(),
   assignedAt: timestamp("assignedAt", { withTimezone: true, mode: "string" }).notNull(),
@@ -51,7 +51,7 @@ export const timers = pgTable("timers", {
   createdAt: timestamp("createdAt", { withTimezone: true, mode: "string" }).defaultNow(),
   createdBy: varchar("createdBy").notNull(),
   projectId: varchar("projectId", idConfig).notNull().references((): AnyPgColumn => projects.id),
-  organization: varchar("organization").notNull(),
+  organization: varchar("organization"),
 })
 export const timerRelations = relations(timers, ({ one }) => ({
   project: one(projects, {
