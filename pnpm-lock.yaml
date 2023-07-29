@@ -112,6 +112,9 @@ devDependencies:
   tailwindcss:
     specifier: ^3.3.0
     version: 3.3.0(postcss@8.4.21)
+  tailwindcss-animate:
+    specifier: ^1.0.6
+    version: 1.0.6(tailwindcss@3.3.0)
   tsx:
     specifier: ^3.12.7
     version: 3.12.7
@@ -4233,6 +4236,14 @@ packages:
     dependencies:
       '@pkgr/utils': 2.4.2
       tslib: 2.6.1
+    dev: true
+
+  /tailwindcss-animate@1.0.6(tailwindcss@3.3.0):
+    resolution: {integrity: sha512-4WigSGMvbl3gCCact62ZvOngA+PRqhAn7si3TQ3/ZuPuQZcIEtVap+ENSXbzWhpojKB8CpvnIsrwBu8/RnHtuw==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      tailwindcss: 3.3.0(postcss@8.4.21)
     dev: true
 
   /tailwindcss@3.3.0(postcss@8.4.21):
