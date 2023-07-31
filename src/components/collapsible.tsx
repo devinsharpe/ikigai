@@ -1,4 +1,3 @@
-import React from 'react';
 import * as RadixCollapsible from '@radix-ui/react-collapsible';
 import { FoldVertical, UnfoldVertical } from 'lucide-react';
 import { cn } from '~/lib/cn';
