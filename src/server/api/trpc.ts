@@ -98,11 +98,11 @@ const isAuthed = t.middleware(({ ctx, next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
-    ctx
-  })
-})
+    ctx,
+  });
+});
 
-export const protectedProcedure = t.procedure.use(isAuthed)
+export const protectedProcedure = t.procedure.use(isAuthed);
 
 /**
  * Public (unauthenticated) procedure

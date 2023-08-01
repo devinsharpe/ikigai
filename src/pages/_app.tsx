@@ -14,18 +14,22 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           name="description"
           content="Managing tasks, projects, and notes shouldn't cost..."
         />
+        <meta name="theme-color" content="#eab308" />
         <meta
           name="theme-color"
-          content="#eab308"
+          content="#ca8a04"
+          media="(prefers-color-scheme: dark)"
         />
-        <meta name="theme-color" content="#ca8a04" media="(prefers-color-scheme: dark)" />
         <link rel="icon" href="https://www.devsharpe.io/api/favicon?emoji=📒" />
       </Head>
-      <ClerkProvider appearance={{
-        elements: {
-          formFieldInput: "rounded-lg"
-        }
-      }} {...pageProps}>
+      <ClerkProvider
+        appearance={{
+          elements: {
+            formFieldInput: "rounded-lg",
+          },
+        }}
+        {...pageProps}
+      >
         <Navbar />
         <Component {...pageProps} />
       </ClerkProvider>
