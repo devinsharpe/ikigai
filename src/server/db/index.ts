@@ -13,7 +13,12 @@ if (!process.env.VERCEL_ENV) {
 
 const db = drizzle(
   new Pool({
-    connectionString: env.DB_URL,
+    // connectionString: env.DB_URL,
+    host: env.PGHOST,
+    user: env.PGUSER,
+    password: env.PGPASSWORD,
+    database: env.PGDATABASE,
+    port: process.env.VERCEL_ENV ? undefined : 5433,
   }),
   {
     schema,
