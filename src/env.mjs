@@ -8,7 +8,6 @@ export const env = createEnv({
    */
   server: {
     CLERK_SECRET_KEY: z.string(),
-    DB_URL: z.string().url(),
     MIGRATE_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "test", "production"]),
     // Database Settings
@@ -29,7 +28,6 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string(),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string(),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string(),
-    // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
   },
 
   /**
@@ -37,15 +35,15 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    DB_URL: process.env.DB_URL,
-    MIGRATE_URL: process.env.MIGRATE_URL,
     NODE_ENV: process.env.NODE_ENV,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     // Database Settings
+    MIGRATE_URL: process.env.MIGRATE_URL,
     PGDATABASE: process.env.PGDATABASE,
     PGHOST: process.env.PGHOST,
     PGPASSWORD: process.env.PGPASSWORD,
     PGUSER: process.env.PGUSER,
+    // Client Settings
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
