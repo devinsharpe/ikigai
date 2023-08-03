@@ -76,6 +76,7 @@ interface CollapsibleProps {
   LoadingElement?: React.FC;
   onOpenChange: (val: boolean) => void;
   previewCount?: number;
+  showCollapseButton?: boolean;
   title: string;
 }
 
@@ -88,6 +89,7 @@ function Collapsible({
   LoadingElement = LoadingCollapsibleItem,
   onOpenChange,
   previewCount = 1,
+  showCollapseButton = true,
   title,
   ...props
 }: CollapsibleProps) {
@@ -104,14 +106,16 @@ function Collapsible({
         </h3>
         <div className="flex items-center gap-2">
           {actions && <>{actions.map((action) => action)}</>}
-          <RadixCollapsible.Trigger
-            asChild
-            disabled={elements.length <= previewCount || isLoading}
-          >
-            <CollapsibleActionButton className="rounded-lg p-2 hover:bg-zinc-100">
-              {isOpen ? <FoldVertical /> : <UnfoldVertical />}
-            </CollapsibleActionButton>
-          </RadixCollapsible.Trigger>
+          {showCollapseButton && (
+            <RadixCollapsible.Trigger
+              asChild
+              disabled={elements.length <= previewCount || isLoading}
+            >
+              <CollapsibleActionButton className="rounded-lg p-2 hover:bg-zinc-100">
+                {isOpen ? <FoldVertical /> : <UnfoldVertical />}
+              </CollapsibleActionButton>
+            </RadixCollapsible.Trigger>
+          )}
         </div>
       </div>
 
