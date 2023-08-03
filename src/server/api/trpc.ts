@@ -93,12 +93,14 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const createTRPCRouter = t.router;
 
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.auth.session || !ctx.auth.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+const isAuthed = t.middleware(({ next, ctx }) => {
+  if (!ctx.auth.userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
   }
   return next({
-    ctx,
+    ctx: {
+      auth: ctx.auth,
+    },
   });
 });
 
