@@ -1,4 +1,3 @@
-import React from "react";
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import {
   FoldVertical,
@@ -71,6 +70,7 @@ interface CollapsibleProps {
   className?: string;
   elements: JSX.Element[];
   isLoading?: boolean;
+  isQuietLoading?: boolean;
   isOpen: boolean;
   EmptyElement?: React.FC;
   LoadingElement?: React.FC;
@@ -83,7 +83,8 @@ interface CollapsibleProps {
 function Collapsible({
   actions,
   elements,
-  isLoading,
+  isLoading = false,
+  isQuietLoading = false,
   isOpen,
   EmptyElement = EmptyCollapsibleItem,
   LoadingElement = LoadingCollapsibleItem,
@@ -102,7 +103,9 @@ function Collapsible({
       <div className="flex items-center justify-between gap-2 px-2 text-2xl font-bold tracking-wide text-zinc-800">
         <h3 className="flex items-center gap-2">
           <span>{title}</span>
-          {isLoading && <Loader2 className="animate-spin text-zinc-500" />}
+          {(isLoading || isQuietLoading) && (
+            <Loader2 className="animate-spin text-zinc-500" />
+          )}
         </h3>
         <div className="flex items-center gap-2">
           {actions && <>{actions.map((action) => action)}</>}
