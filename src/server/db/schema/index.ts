@@ -3,7 +3,7 @@ import enumSchema from "./enums";
 
 const schema = {
   ...appSchema,
-  ...relationSchema
+  ...relationSchema,
 };
 
 export default schema;
@@ -12,6 +12,7 @@ export default schema;
 export const projects = schema.projects;
 export const tasks = schema.tasks;
 export const timers = schema.timers;
+export const timerTemplates = schema.timerTemplates;
 
 // Enums
 export const projectVisibilityEnum = enumSchema.projectVisibilityEnum;
