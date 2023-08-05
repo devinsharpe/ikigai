@@ -1,15 +1,5 @@
 import { Loader2, ListPlus } from "lucide-react";
-
-interface SimpleOrganization {
-  id: string;
-  name: string;
-}
-
-interface SimpleProject {
-  name: string;
-  description: string;
-  organization: string;
-}
+import type { SimpleOrganization, SimpleProject } from ".";
 
 interface ProjectFormProps {
   isLoading: boolean;
@@ -56,12 +46,12 @@ function ProjectForm({
             description: e.target.value,
           })
         }
-        value={project.description}
+        value={project.description ?? ""}
       />
       <select
         title="Project Organization"
         className="w-full rounded-lg border border-zinc-300 p-3 text-zinc-800"
-        value={project.organization}
+        value={project.organization ?? ""}
         onChange={(e) =>
           onChange({
             ...project,
