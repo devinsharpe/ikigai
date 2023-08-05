@@ -3,10 +3,10 @@ import Link from "next/link";
 
 function Navbar() {
   return (
-    <nav className="fixed z-[1] p-2 inset-x-0 top-0 flex w-full justify-center bg-white">
+    <nav className="fixed inset-x-0 top-0 z-[1] flex w-full justify-center bg-white p-2">
       <div className="container flex w-full justify-between py-2">
         <h1 className="flex items-center gap-2 text-2xl font-bold tracking-wide text-zinc-800">
-          <span>&#10048;</span>
+          <span>🌼</span>
           <span>Ikigai</span>
         </h1>
         <div className="flex items-center gap-4">
