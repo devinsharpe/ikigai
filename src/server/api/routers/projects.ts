@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { and, asc, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { projects } from "~/server/db/schema";
 import { createId } from "~/server/db/utils";
 
@@ -20,7 +20,7 @@ export const projectsRouter = createTRPCRouter({
           id: createId(),
           createdAt: new Date().toUTCString(),
           createdBy: ctx.auth.userId,
-          organization: ctx.auth.organization ? ctx.auth.organization.id : null,
+          organization: ctx.auth.orgId,
         })
         .returning();
       return newProject;
@@ -31,10 +31,7 @@ export const projectsRouter = createTRPCRouter({
       where: and(
         eq(projects.isActive, true),
         ...(ctx.auth.orgId
-          ? [
-              eq(projects.organization, ctx.auth.orgId),
-              eq(projects.isActive, true),
-            ]
+          ? [eq(projects.organization, ctx.auth.orgId)]
           : [
               eq(projects.createdBy, ctx.auth.userId),
               isNull(projects.organization),
