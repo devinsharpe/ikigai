@@ -31,8 +31,16 @@ export const tasks = pgTable("tasks", {
   name: varchar("name").notNull(),
   description: varchar("description"),
   priority: smallint("priority").default(0),
-  dueDate: timestamp("dueDate", { withTimezone: true, mode: "string" }),
-  completedAt: timestamp("completedAt", { withTimezone: true, mode: "string" }),
+  dueDate: timestamp("dueDate", {
+    withTimezone: true,
+    mode: "string",
+    precision: 6,
+  }),
+  completedAt: timestamp("completedAt", {
+    withTimezone: true,
+    mode: "string",
+    precision: 6,
+  }),
   isActive: boolean("isActive").default(true),
   createdAt: timestamp("createdAt", {
     withTimezone: true,
@@ -61,13 +69,20 @@ export type NewTask = InferModel<typeof tasks, "insert">;
 
 export const timers = pgTable("timers", {
   id: varchar("id", idConfig).primaryKey().notNull(),
-  name: varchar("name"),
+  name: varchar("name").notNull(),
   description: varchar("description"),
-  startedAt: timestamp("startedAt", { withTimezone: true, mode: "string" })
+  startedAt: timestamp("startedAt", {
+    withTimezone: true,
+    mode: "string",
+    precision: 6,
+  })
     .notNull()
     .defaultNow(),
-  stoppedAt: timestamp("stoppedAt", { withTimezone: true, mode: "string" }),
-  length: integer("length").default(-1),
+  stoppedAt: timestamp("stoppedAt", {
+    withTimezone: true,
+    mode: "string",
+    precision: 6,
+  }),
   createdAt: timestamp("createdAt", {
     withTimezone: true,
     mode: "string",
