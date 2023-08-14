@@ -13,7 +13,7 @@ export interface SimpleTimer {
   name: string;
   description: string | null;
   startedAt: string;
-  stoppedAt: string;
+  stoppedAt: string | null;
   projectId: string;
-  organization: string;
+  organization: string | null;
 }
