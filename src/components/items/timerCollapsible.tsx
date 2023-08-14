@@ -1,17 +1,30 @@
-import { Disc3, PauseCircle } from "lucide-react";
-import { useState } from "react";
+import {
+  Copy,
+  Disc3,
+  MoreHorizontal,
+  PauseCircle,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { CollapsibleItem } from "../collapsible";
 import { useInterval } from "~/hooks/interval";
 import { cn } from "~/lib/cn";
+import Dropdown, { DropdownItem } from "../dropdown";
+import type { SimpleTimer } from "../forms";
 
 interface TimerCollapsibleItemProps {
+  onEdit: (
+    timer: SimpleTimer & {
+      id: string;
+      project: {
+        name: string;
+      };
+    }
+  ) => void;
   onStop: (id: string) => Promise<void>;
-  timer: {
+  timer: SimpleTimer & {
     id: string;
-    name: string;
-    description: string | null;
-    startedAt: string;
-    stoppedAt: string | null;
     project: {
       name: string;
     };
@@ -26,13 +39,25 @@ function formatLength(len: number) {
     .padStart(2, "0")}`;
 }
 
-function TimerCollapsibleItem({ onStop, timer }: TimerCollapsibleItemProps) {
-  const [length, setLength] = useState(
+function TimerCollapsibleItem({
+  onEdit,
+  onStop,
+  timer,
+}: TimerCollapsibleItemProps) {
+  const [length, setLength] = useState(-1);
+
+  useEffect(() => {
     timer.stoppedAt
       ? Math.floor(+new Date(timer.stoppedAt) / 1000) -
+        Math.floor(+new Date(timer.startedAt) / 1000)
+      : -1;
+    if (timer.stoppedAt)
+      setLength(
+        Math.floor(+new Date(timer.stoppedAt) / 1000) -
           Math.floor(+new Date(timer.startedAt) / 1000)
-      : -1
-  );
+      );
+    else setLength(-1);
+  }, [timer.stoppedAt, timer.startedAt, setLength]);
 
   useInterval(
     () => {
@@ -46,7 +71,7 @@ function TimerCollapsibleItem({ onStop, timer }: TimerCollapsibleItemProps) {
 
   return (
     <CollapsibleItem className="group">
-      <div className="flex w-full items-center gap-4">
+      <div className="flex w-full items-center gap-2">
         {!timer.stoppedAt && (
           <button
             type="button"
@@ -65,12 +90,45 @@ function TimerCollapsibleItem({ onStop, timer }: TimerCollapsibleItemProps) {
         </div>
         <span
           className={cn(
-            "ml-auto px-3 py-1 text-sm",
-            timer.stoppedAt ? "rounded-lg bg-zinc-200 " : "font-semibold"
+            "ml-auto px-3 py-1",
+            timer.stoppedAt ? "rounded-lg bg-zinc-200" : "font-semibold"
           )}
+          key={`${timer.id}-${timer.stoppedAt ?? "current"}`}
         >
           {length !== -1 && formatLength(length)}
         </span>
+        <Dropdown
+          trigger={
+            <button
+              type="button"
+              className="items-center justify-center rounded-lg px-2 py-1 hover:bg-zinc-200 group-hover:flex"
+              onClick={console.log}
+            >
+              <MoreHorizontal className="text-zinc-600" />
+            </button>
+          }
+        >
+          <>
+            <DropdownItem>
+              <button type="button" onClick={() => void onEdit(timer)}>
+                <Pencil className="h-5 w-5" />
+                <span>Edit Details</span>
+              </button>
+            </DropdownItem>
+            <DropdownItem>
+              <button type="button">
+                <Copy className="h-5 w-5" />
+                <span>Save as Template</span>
+              </button>
+            </DropdownItem>
+            <DropdownItem>
+              <button type="button">
+                <Trash2 className="h-5 w-5" />
+                <span>Delete Entry</span>
+              </button>
+            </DropdownItem>
+          </>
+        </Dropdown>
       </div>
     </CollapsibleItem>
   );
