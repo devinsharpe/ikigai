@@ -96,7 +96,7 @@ function Collapsible({
 }: CollapsibleProps) {
   return (
     <RadixCollapsible.Root
-      className={cn("flex flex-col gap-2", props.className)}
+      className="flex flex-col gap-2"
       open={isOpen}
       onOpenChange={onOpenChange}
     >
@@ -122,28 +122,30 @@ function Collapsible({
         </div>
       </div>
 
-      {!isLoading && elements.length ? (
-        <>
-          {elements.slice(0, previewCount).map((el) => el)}
-          <RadixCollapsible.Content className="flex flex-col gap-2">
-            {elements.slice(previewCount).map((el) => el)}
-          </RadixCollapsible.Content>
-        </>
-      ) : (
-        <></>
-      )}
+      <div className={cn("flex flex-col gap-2", props.className)}>
+        {!isLoading && elements.length ? (
+          <>
+            {elements.slice(0, previewCount).map((el) => el)}
+            <RadixCollapsible.Content className="flex flex-col gap-2">
+              {elements.slice(previewCount).map((el) => el)}
+            </RadixCollapsible.Content>
+          </>
+        ) : (
+          <></>
+        )}
 
-      {!isLoading && elements.length === 0 ? <EmptyElement /> : <></>}
+        {!isLoading && elements.length === 0 ? <EmptyElement /> : <></>}
 
-      {isLoading ? (
-        <>
-          {[...Array(previewCount).keys()].map((key) => (
-            <LoadingElement key={key} />
-          ))}
-        </>
-      ) : (
-        <></>
-      )}
+        {isLoading ? (
+          <>
+            {[...Array(previewCount).keys()].map((key) => (
+              <LoadingElement key={key} />
+            ))}
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
     </RadixCollapsible.Root>
   );
 }
