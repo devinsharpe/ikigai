@@ -9,18 +9,12 @@ import {
 import { useEffect, useState } from "react";
 import type { SimpleOrganization, SimpleTimer, SimpleProject } from ".";
 import Toggle from "../toggle";
-
-function formatDatetimeString(date: Date) {
-  return date
-    .toLocaleString("sv", { hourCycle: "h23" })
-    .substring(0, 16)
-    .replace(" ", "T");
-}
+import { formatDatetimeString } from "~/lib/date";
 
 interface TimerFormProps {
   isLoading: boolean;
   isLoadingProjects?: boolean;
-  timer: SimpleTimer;
+  timer: SimpleTimer & { id?: string };
   projects: (SimpleProject & { id: string })[];
   organizations: SimpleOrganization[];
   onChange: (data: Partial<SimpleTimer>) => void;
@@ -39,20 +33,27 @@ function TimerForm({
   const [isStartEnabled, setIsStartEnabled] = useState(false);
   const [isEndEnabled, setIsEndEnabled] = useState(false);
 
-  useEffect(() => {
-    console.log(formatDatetimeString(new Date()));
-    onChange({
-      startedAt: isStartEnabled ? formatDatetimeString(new Date()) : "",
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isStartEnabled]);
+  // useEffect(() => {
+  //   onChange({
+  //     startedAt: isStartEnabled ? formatDatetimeString(new Date()) : "",
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isStartEnabled]);
+
+  // useEffect(() => {
+  //   onChange({
+  //     stoppedAt: isEndEnabled ? formatDatetimeString(new Date()) : "",
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isEndEnabled]);
 
   useEffect(() => {
-    onChange({
-      stoppedAt: isEndEnabled ? formatDatetimeString(new Date()) : "",
-    });
+    if (timer.id) {
+      setIsStartEnabled(!!timer.startedAt);
+      setIsEndEnabled(!!timer.stoppedAt);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndEnabled]);
+  }, [timer.id]);
 
   return (
     <form
@@ -76,7 +77,16 @@ function TimerForm({
       />
 
       <fieldset className="flex items-center gap-2">
-        <Toggle pressed={isStartEnabled} onPressedChange={setIsStartEnabled}>
+        <Toggle
+          pressed={isStartEnabled}
+          onPressedChange={(isPressed) => {
+            if (isPressed)
+              onChange({
+                startedAt: formatDatetimeString(new Date()),
+              });
+            setIsStartEnabled(isPressed);
+          }}
+        >
           <PlayCircle className="h-7 w-7" />
         </Toggle>
         <input
@@ -90,7 +100,16 @@ function TimerForm({
         />
       </fieldset>
       <fieldset className="flex items-center gap-2">
-        <Toggle pressed={isEndEnabled} onPressedChange={setIsEndEnabled}>
+        <Toggle
+          pressed={isEndEnabled}
+          onPressedChange={(isPressed) => {
+            if (isPressed)
+              onChange({
+                stoppedAt: formatDatetimeString(new Date()),
+              });
+            setIsEndEnabled(isPressed);
+          }}
+        >
           <PauseCircle className="h-7 w-7" />
         </Toggle>
         <input
@@ -99,7 +118,7 @@ function TimerForm({
           placeholder="Time entry end"
           title="Time Entry End"
           type="datetime-local"
-          defaultValue={timer.stoppedAt}
+          defaultValue={timer.stoppedAt ?? ""}
           onChange={(e) => onChange({ stoppedAt: e.target.value })}
         />
       </fieldset>
@@ -175,7 +194,7 @@ function TimerForm({
         ) : (
           <Clock />
         )}
-        <span>Create Time Entry</span>
+        <span>{timer.id ? "Edit" : "Create"} Time Entry</span>
       </button>
     </form>
   );
