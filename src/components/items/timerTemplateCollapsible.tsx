@@ -47,9 +47,9 @@ function TimerTemplateCollapsibleItem({
           <h5 className="w-full truncate font-semibold leading-tight">
             {timerTemplate.name}
           </h5>
-          <span className="text-sm leading-none text-zinc-600">
+          <h6 className="text-sm leading-none text-zinc-600">
             {timerTemplate.project.name}
-          </span>
+          </h6>
         </div>
         <button
           type="button"
