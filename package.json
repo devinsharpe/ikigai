@@ -7,7 +7,7 @@
     "name": "Devin Sharpe",
     "url": "https://devsharpe.io"
   },
-  "packageManager": "pnpm@8.6.10",
+  "packageManager": "pnpm@8.6.12",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4.23.1",
     "@neondatabase/serverless": "^0.5.6",
+    "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-context-menu": "^2.1.4",
     "@radix-ui/react-dialog": "^1.0.4",
