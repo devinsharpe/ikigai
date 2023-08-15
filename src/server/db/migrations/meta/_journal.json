@@ -36,6 +36,13 @@
       "when": 1691277538126,
       "tag": "0004_pretty_lockjaw",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1691995112028,
+      "tag": "0005_light_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

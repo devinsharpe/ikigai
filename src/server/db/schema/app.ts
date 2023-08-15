@@ -123,7 +123,7 @@ export const timerTemplates = pgTable("timerTemplates", {
   createdBy: varchar("createdBy").notNull(),
   projectId: varchar("projectId", idConfig)
     .notNull()
-    .references((): AnyPgColumn => projects.id),
+    .references((): AnyPgColumn => projects.id, { onDelete: "cascade" }),
   organization: varchar("organization"),
 });
 export const timerTemplateRelations = relations(
