@@ -21,6 +21,7 @@ import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
 import { api } from "~/utils/api";
 import Alert from "../../components/alert";
+import ContextMenu from "~/components/contextMenu";
 
 function AppHomePage() {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
@@ -66,6 +67,7 @@ function AppHomePage() {
     setIsTimerTemplateModalOpen,
     timerTemplateDetails,
     setTimerTemplateDetails,
+    handleDeleteTimerTemplate,
     handleTimerTemplateSubmit,
     createTimerTemplate,
     updateTimerTemplate,
@@ -183,6 +185,15 @@ function AppHomePage() {
                     <TimerTemplateCollapsibleItem
                       key={timerTemplate.id}
                       isLoading={createTimer.isLoading}
+                      onDelete={(id) => {
+                        setDataId(id);
+                        setDataType("timerTemplate");
+                        setIsDeleteAlertOpen(true);
+                      }}
+                      onEdit={(t) => {
+                        setTimerTemplateDetails(t);
+                        setIsTimerTemplateModalOpen(true);
+                      }}
                       onTimerStart={async (timer) =>
                         await handleTimerSubmit({
                           ...timer,
@@ -336,7 +347,7 @@ function AppHomePage() {
         onOpenChange={() =>
           setIsTimerTemplateModalOpen(!isTimerTemplateModalOpen)
         }
-        title={timerDetails.id ? "Edit Saved Timer" : "New Saved Timer"}
+        title={timerTemplateDetails.id ? "Edit Saved Timer" : "New Saved Timer"}
         description="Personal project? Working out? New video game?"
       >
         <TimerTemplateForm
@@ -368,7 +379,12 @@ function AppHomePage() {
         actionText="Yes, delete"
         cancelText="Cancel"
         onAction={() => {
-          if (dataId) void handleDeleteTimer(dataId);
+          if (dataId) {
+            if (dataType === "timer") void handleDeleteTimer(dataId);
+            if (dataType === "timerTemplate")
+              void handleDeleteTimerTemplate(dataId);
+          }
+
           resetDeleteControls();
         }}
         onCancel={resetDeleteControls}
