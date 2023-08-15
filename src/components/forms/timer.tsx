@@ -18,6 +18,7 @@ interface TimerFormProps {
   projects: (SimpleProject & { id: string })[];
   organizations: SimpleOrganization[];
   onChange: (data: Partial<SimpleTimer>) => void;
+  onOrgChange: (org: string) => Promise<void>;
   onSubmit: (data: SimpleTimer) => Promise<void>;
 }
 
@@ -28,6 +29,7 @@ function TimerForm({
   projects,
   organizations,
   onChange,
+  onOrgChange,
   onSubmit,
 }: TimerFormProps) {
   const [isStartEnabled, setIsStartEnabled] = useState(false);
@@ -165,12 +167,7 @@ function TimerForm({
           title="Time Entry Organization"
           className="w-full rounded-lg border border-zinc-300 p-3 pl-10 text-zinc-800"
           value={timer.organization ?? ""}
-          onChange={(e) =>
-            onChange({
-              ...timer,
-              organization: e.target.value,
-            })
-          }
+          onChange={(e) => void onOrgChange(e.target.value)}
         >
           <option value="">Personal Workspace</option>
           {organizations ? (
