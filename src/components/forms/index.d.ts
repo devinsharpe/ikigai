@@ -17,3 +17,10 @@ export interface SimpleTimer {
   projectId: string;
   organization: string | null;
 }
+
+export interface SimpleTimerTemplate {
+  name: string;
+  description: string | null;
+  projectId: string;
+  organization: string | null;
+}
