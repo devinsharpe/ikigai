@@ -12,8 +12,9 @@ const initialTimerTemplateData = {
 export function useTimerTemplateControls(org: string) {
   const [isTimerTemplateModalOpen, setIsTimerTemplateModalOpen] =
     useState(false);
-  const [timerTemplateDetails, setTimerTemplateDetails] =
-    useState<SimpleTimerTemplate>(initialTimerTemplateData);
+  const [timerTemplateDetails, setTimerTemplateDetails] = useState<
+    SimpleTimerTemplate & { id?: string }
+  >(initialTimerTemplateData);
   const createTimerTemplate = api.timerTemplates.create.useMutation();
   const deleteTimerTemplate = api.timerTemplates.delete.useMutation();
   const updateTimerTemplate = api.timerTemplates.update.useMutation();
@@ -64,6 +65,14 @@ export function useTimerTemplateControls(org: string) {
     ]
   );
 
+  const handleDeleteTimerTemplate = useCallback(
+    async (id: string) => {
+      await deleteTimerTemplate.mutateAsync({ id });
+      void timerTemplates.refetch();
+    },
+    [deleteTimerTemplate, timerTemplates]
+  );
+
   return {
     isTimerTemplateModalOpen,
     setIsTimerTemplateModalOpen,
@@ -73,6 +82,7 @@ export function useTimerTemplateControls(org: string) {
     deleteTimerTemplate,
     updateTimerTemplate,
     timerTemplates,
+    handleDeleteTimerTemplate,
     handleTimerTemplateSubmit,
   };
 }
