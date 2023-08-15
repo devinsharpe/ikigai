@@ -5,64 +5,58 @@ import Collapsible, {
   CollapsibleActionButton,
   CollapsibleItem,
 } from "~/components/collapsible";
-import type { SimpleProject, SimpleTimer } from "~/components/forms";
+import type { SimpleProject } from "~/components/forms";
 import ProjectForm from "~/components/forms/project";
 import TimerForm from "~/components/forms/timer";
+import TimerTemplateForm from "~/components/forms/timerTemplate";
 import TimerCollapsibleItem from "~/components/items/timerCollapsible";
+import TimerTemplateCollapsibleItem from "~/components/items/timerTemplateCollapsible";
 import Modal from "~/components/modal";
+import { useTimerControls } from "~/hooks/timerControls";
+import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
+import { formatDatetimeString } from "~/lib/date";
 import { api } from "~/utils/api";
-
-function toTZISOString(date: Date) {
-  const tzo = -date.getTimezoneOffset(),
-    dif = tzo >= 0 ? "+" : "-",
-    pad = function (num: number) {
-      return (num < 10 ? "0" : "") + num;
-    };
-
-  return (
-    date.getFullYear() +
-    "-" +
-    pad(date.getMonth() + 1) +
-    "-" +
-    pad(date.getDate()) +
-    "T" +
-    pad(date.getHours()) +
-    ":" +
-    pad(date.getMinutes()) +
-    ":" +
-    pad(date.getSeconds()) +
-    dif +
-    pad(Math.floor(Math.abs(tzo) / 60)) +
-    ":" +
-    pad(Math.abs(tzo) % 60)
-  );
-}
 
 function AppHomePage() {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
-  const [isNewTimerOpen, setIsNewTimerOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isTimersOpen, setIsTimersOpen] = useState(false);
+  const [isSavedTimersOpen, setIsSavedTimersOpen] = useState(false);
   const [newProjectDetails, setNewProjectDetails] = useState<SimpleProject>({
     name: "",
     description: "",
     organization: "",
   });
-  const [newTimerDetails, setNewTimerDetails] = useState<SimpleTimer>({
-    name: "",
-    description: "",
-    organization: "",
-    projectId: "",
-    startedAt: "",
-    stoppedAt: "",
-  });
   const currentOrganization = useOrganization();
   const { organizationList, setActive } = useOrganizationList();
   const projects = api.projects.list.useQuery();
-  const timers = api.timers.list.useQuery();
   const createProject = api.projects.create.useMutation();
-  const createTimer = api.timers.create.useMutation();
-  const stopTimer = api.timers.stop.useMutation();
+
+  const {
+    timers,
+    isTimerModalOpen,
+    setIsTimerModalOpen,
+    timerDetails,
+    setTimerDetails,
+    createTimer,
+    updateTimer,
+    handleDeleteTimer,
+    handleTimerSubmit,
+    handleStopTimer,
+  } = useTimerControls();
+
+  const {
+    timerTemplates,
+    isTimerTemplateModalOpen,
+    setIsTimerTemplateModalOpen,
+    timerTemplateDetails,
+    setTimerTemplateDetails,
+    handleTimerTemplateSubmit,
+    createTimerTemplate,
+    updateTimerTemplate,
+  } = useTimerTemplateControls(
+    currentOrganization.organization ? currentOrganization.organization.id : ""
+  );
 
   const handleNewProject = useCallback(
     async (project: SimpleProject) => {
@@ -92,73 +86,30 @@ function AppHomePage() {
     ]
   );
 
-  const handleNewTimer = useCallback(
-    async (timer: SimpleTimer) => {
-      if (timer.name && timer.projectId && timer.startedAt) {
-        await createTimer.mutateAsync({
-          ...timer,
-          description: timer.description ?? "",
-          startedAt: timer.startedAt
-            ? toTZISOString(new Date(timer.startedAt))
-            : undefined,
-          stoppedAt: timer.stoppedAt
-            ? toTZISOString(new Date(timer.stoppedAt))
-            : undefined,
-        });
-        void timers.refetch();
-        setIsNewTimerOpen(false);
-        setNewTimerDetails({
-          name: "",
-          description: "",
-          organization: "",
-          projectId: "",
-          startedAt: "",
-          stoppedAt: "",
-        });
-      } else if (!timer.name) {
-        console.log("missing name");
-      } else if (!timer.projectId) {
-        console.log("missing project");
-      }
-    },
-    [timers, createTimer, setIsNewTimerOpen, setNewTimerDetails]
-  );
-
-  const handleStopTimer = useCallback(
-    async (id: string) => {
-      await stopTimer.mutateAsync({ id });
-      void timers.refetch();
-    },
-    [timers, stopTimer]
-  );
-
   useEffect(() => {
     void projects.refetch();
     void timers.refetch();
+    void timerTemplates.refetch();
     setNewProjectDetails((p) => ({
       ...p,
       organization: currentOrganization.organization
         ? currentOrganization.organization.id
         : "",
     }));
+    setTimerDetails((t) => ({
+      ...t,
+      organization: currentOrganization.organization
+        ? currentOrganization.organization.id
+        : "",
+    }));
+    setTimerTemplateDetails((t) => ({
+      ...t,
+      organization: currentOrganization.organization
+        ? currentOrganization.organization.id
+        : "",
+    }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentOrganization.organization]);
-
-  useEffect(() => {
-    const orgId = currentOrganization.organization
-      ? currentOrganization.organization.id
-      : "";
-    if (setActive && orgId !== newTimerDetails.organization) {
-      if (isNewTimerOpen)
-        void setActive({ organization: newTimerDetails.organization });
-      else setNewTimerDetails((t) => ({ ...t, organization: orgId }));
-    }
-  }, [
-    isNewTimerOpen,
-    setActive,
-    currentOrganization.organization,
-    newTimerDetails.organization,
-  ]);
 
   return (
     <>
@@ -193,6 +144,44 @@ function AppHomePage() {
       <main className="container mx-auto flex min-h-screen flex-col flex-col gap-4 px-2 pb-6 pt-20">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Collapsible
+            className="grid grid-cols-1 md:grid-cols-2"
+            isOpen={isSavedTimersOpen}
+            onOpenChange={setIsSavedTimersOpen}
+            previewCount={4}
+            actions={[
+              <CollapsibleActionButton
+                key="time-entry-template-edit"
+                title="Edit time entry template"
+                onClick={() => setIsTimerTemplateModalOpen(true)}
+              >
+                <>
+                  <Plus />
+                  <span className="sr-only">Edit Time Entry Template</span>
+                </>
+              </CollapsibleActionButton>,
+            ]}
+            elements={
+              timerTemplates.data
+                ? timerTemplates.data.map((timerTemplate) => (
+                    <TimerTemplateCollapsibleItem
+                      key={timerTemplate.id}
+                      isLoading={createTimer.isLoading}
+                      onTimerStart={async (timer) =>
+                        await handleTimerSubmit({
+                          ...timer,
+                          startedAt: new Date().toISOString(),
+                          stoppedAt: null,
+                          organization: timerDetails.organization,
+                        })
+                      }
+                      timerTemplate={timerTemplate}
+                    />
+                  ))
+                : []
+            }
+            title="Saved Timers"
+          />
+          <Collapsible
             isLoading={timers.isLoading}
             isQuietLoading={timers.isRefetching}
             isOpen={isTimersOpen}
@@ -200,13 +189,13 @@ function AppHomePage() {
             previewCount={3}
             actions={[
               <CollapsibleActionButton
-                key="time-entry-new"
-                title="New Time Entry"
-                onClick={() => setIsNewTimerOpen(true)}
+                key="time-entry-edit"
+                title="Edit time entry"
+                onClick={() => setIsTimerModalOpen(true)}
               >
                 <>
                   <Plus />
-                  <span className="sr-only">New Time Entry</span>
+                  <span className="sr-only">Edit Time Entry</span>
                 </>
               </CollapsibleActionButton>,
             ]}
@@ -214,7 +203,26 @@ function AppHomePage() {
               timers.data
                 ? timers.data.map((timer) => (
                     <TimerCollapsibleItem
+                      onEdit={(t) => {
+                        setTimerDetails({
+                          ...t,
+                          startedAt: formatDatetimeString(
+                            new Date(t.startedAt)
+                          ),
+                          stoppedAt: formatDatetimeString(
+                            new Date(t.stoppedAt ?? "")
+                          ),
+                        });
+                        setIsTimerModalOpen(true);
+                      }}
                       onStop={handleStopTimer}
+                      onTemplateSave={(templateDraft) => {
+                        setTimerTemplateDetails((t) => ({
+                          ...t,
+                          ...templateDraft,
+                        }));
+                        setIsTimerTemplateModalOpen(true);
+                      }}
                       timer={timer}
                       key={timer.id}
                     />
@@ -278,26 +286,55 @@ function AppHomePage() {
         />
       </Modal>
       <Modal
-        isOpen={isNewTimerOpen}
-        onOpenChange={() => setIsNewTimerOpen(!isNewTimerOpen)}
-        title="New Time Entry"
+        isOpen={isTimerModalOpen}
+        onOpenChange={() => setIsTimerModalOpen(!isTimerModalOpen)}
+        title={timerDetails.id ? "Edit Time Entry" : "New Time Entry"}
         description="Front end work? Back end work? Date night? Accounting affairs?"
       >
         <TimerForm
-          isLoading={createTimer.isLoading}
+          isLoading={createTimer.isLoading || updateTimer.isLoading}
           isLoadingProjects={projects.isLoading || projects.isRefetching}
           organizations={
             organizationList
               ? organizationList.map((org) => org.organization)
               : []
           }
-          onChange={(t) => {
-            console.log(t);
-            setNewTimerDetails({ ...newTimerDetails, ...t });
+          onChange={(t) => setTimerDetails({ ...timerDetails, ...t })}
+          onOrgChange={async (org) => {
+            if (setActive) await setActive({ organization: org });
           }}
-          onSubmit={handleNewTimer}
+          onSubmit={handleTimerSubmit}
           projects={projects.data ?? []}
-          timer={newTimerDetails}
+          timer={timerDetails}
+        />
+      </Modal>
+      <Modal
+        isOpen={isTimerTemplateModalOpen}
+        onOpenChange={() =>
+          setIsTimerTemplateModalOpen(!isTimerTemplateModalOpen)
+        }
+        title={timerDetails.id ? "Edit Saved Timer" : "New Saved Timer"}
+        description="Personal project? Working out? New video game?"
+      >
+        <TimerTemplateForm
+          isLoading={
+            createTimerTemplate.isLoading || updateTimerTemplate.isLoading
+          }
+          isLoadingProjects={projects.isLoading || projects.isRefetching}
+          organizations={
+            organizationList
+              ? organizationList.map((org) => org.organization)
+              : []
+          }
+          onChange={(t) =>
+            setTimerTemplateDetails({ ...timerTemplateDetails, ...t })
+          }
+          onOrgChange={async (org) => {
+            if (setActive) await setActive({ organization: org });
+          }}
+          onSubmit={handleTimerTemplateSubmit}
+          projects={projects.data ?? []}
+          timerTemplate={timerTemplateDetails}
         />
       </Modal>
     </>
