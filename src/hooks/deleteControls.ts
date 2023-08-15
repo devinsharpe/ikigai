@@ -4,7 +4,7 @@ type dataType = "timer" | "timerTemplate" | "project";
 
 export const dataTypeReadableNames: Record<dataType, string> = {
   timer: "Timer",
-  timerTemplate: "Timer Template",
+  timerTemplate: "Saved Timer",
   project: "Project",
 };
 
