@@ -49,7 +49,6 @@ export const timersRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       await projectAccessGuard(ctx, input.projectId);
-      if (input.startedAt) console.log(new Date(input.startedAt));
       const timer = await ctx.db
         .insert(timers)
         .values({
