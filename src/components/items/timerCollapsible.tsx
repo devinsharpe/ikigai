@@ -1,17 +1,13 @@
-import {
-  Copy,
-  Disc3,
-  MoreHorizontal,
-  PauseCircle,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Copy, Disc3, List, PauseCircle, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CollapsibleItem } from "../collapsible";
 import { useInterval } from "~/hooks/interval";
 import { cn } from "~/lib/cn";
-import Dropdown, { DropdownItem } from "../dropdown";
 import type { SimpleTimer } from "../forms";
+import ContextMenu, {
+  ContextMenuItem,
+  ContextMenuSeparater,
+} from "../contextMenu";
 
 interface TimerCollapsibleItemProps {
   onDelete: (id: string) => void;
@@ -78,75 +74,75 @@ function TimerCollapsibleItem({
   );
 
   return (
-    <CollapsibleItem className="group">
-      <div className="flex w-full items-center gap-2">
-        {!timer.stoppedAt && (
-          <button
-            type="button"
-            className="flex items-center justify-center rounded-lg p-2 hover:bg-zinc-200"
-            onClick={() => void onStop(timer.id)}
-          >
-            <Disc3 className="shrink-0 animate-spin text-zinc-600 group-hover:hidden" />
-            <PauseCircle className="hidden text-zinc-800 group-hover:block" />
-          </button>
-        )}
-        <div className="flex flex-col">
-          <span className="font-semibold leading-tight">{timer.name}</span>
-          <span className="text-sm leading-none text-zinc-600">
-            {timer.project.name}
-          </span>
-        </div>
-        <span
-          className={cn(
-            "ml-auto px-3 py-1",
-            timer.stoppedAt ? "rounded-lg bg-zinc-200" : "font-semibold"
-          )}
-          key={`${timer.id}-${timer.stoppedAt ?? "current"}`}
-        >
-          {length !== -1 && formatLength(length)}
-        </span>
-        <Dropdown
-          trigger={
-            <button
-              type="button"
-              className="items-center justify-center rounded-lg px-2 py-1 hover:bg-zinc-200 group-hover:flex"
+    <ContextMenu
+      trigger={
+        <CollapsibleItem className="group">
+          <div className="flex w-full items-center gap-2">
+            {!timer.stoppedAt && (
+              <button
+                type="button"
+                className="flex items-center justify-center rounded-lg p-2 hover:bg-zinc-200"
+                onClick={() => void onStop(timer.id)}
+              >
+                <Disc3 className="shrink-0 animate-spin text-zinc-600 group-hover:hidden" />
+                <PauseCircle className="hidden text-zinc-800 group-hover:block" />
+              </button>
+            )}
+            <div className="flex flex-col">
+              <span className="font-semibold leading-tight">{timer.name}</span>
+              <span className="text-sm leading-none text-zinc-600">
+                {timer.project.name}
+              </span>
+            </div>
+            <span
+              className={cn(
+                "ml-auto px-3 py-1",
+                timer.stoppedAt ? "rounded-lg bg-zinc-200" : "font-semibold"
+              )}
+              key={`${timer.id}-${timer.stoppedAt ?? "current"}`}
             >
-              <MoreHorizontal className="text-zinc-600" />
-            </button>
+              {length !== -1 && formatLength(length)}
+            </span>
+          </div>
+        </CollapsibleItem>
+      }
+    >
+      <>
+        <ContextMenuItem>
+          <>
+            <List className="absolute left-5 w-4" />
+            <span>View Project</span>
+          </>
+        </ContextMenuItem>
+        <ContextMenuSeparater />
+        <ContextMenuItem onClick={() => void onEdit(timer)}>
+          <>
+            <Pencil className="absolute left-5 w-4" />
+            <span>Edit Details</span>
+          </>
+        </ContextMenuItem>
+        <ContextMenuItem
+          onClick={() =>
+            onTemplateSave({
+              name: timer.name,
+              description: timer.description ?? "",
+              projectId: timer.projectId,
+            })
           }
         >
           <>
-            <DropdownItem>
-              <button type="button" onClick={() => void onEdit(timer)}>
-                <Pencil className="h-5 w-5" />
-                <span>Edit Details</span>
-              </button>
-            </DropdownItem>
-            <DropdownItem>
-              <button
-                type="button"
-                onClick={() =>
-                  onTemplateSave({
-                    name: timer.name,
-                    description: timer.description ?? "",
-                    projectId: timer.projectId,
-                  })
-                }
-              >
-                <Copy className="h-5 w-5" />
-                <span>Save as Template</span>
-              </button>
-            </DropdownItem>
-            <DropdownItem>
-              <button type="button" onClick={() => onDelete(timer.id)}>
-                <Trash2 className="h-5 w-5" />
-                <span>Delete Entry</span>
-              </button>
-            </DropdownItem>
+            <Copy className="absolute left-5 w-4" />
+            <span>Save Timer</span>
           </>
-        </Dropdown>
-      </div>
-    </CollapsibleItem>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => onDelete(timer.id)}>
+          <>
+            <Trash2 className="absolute left-5 w-4" />
+            <span>Delete Entry</span>
+          </>
+        </ContextMenuItem>
+      </>
+    </ContextMenu>
   );
 }
 
