@@ -12,10 +12,15 @@ import TimerTemplateForm from "~/components/forms/timerTemplate";
 import TimerCollapsibleItem from "~/components/items/timerCollapsible";
 import TimerTemplateCollapsibleItem from "~/components/items/timerTemplateCollapsible";
 import Modal from "~/components/modal";
+import {
+  dataTypeReadableNames,
+  useDeleteControls,
+} from "~/hooks/deleteControls";
 import { useTimerControls } from "~/hooks/timerControls";
 import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
 import { api } from "~/utils/api";
+import Alert from "../../components/alert";
 
 function AppHomePage() {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
@@ -31,6 +36,16 @@ function AppHomePage() {
   const { organizationList, setActive } = useOrganizationList();
   const projects = api.projects.list.useQuery();
   const createProject = api.projects.create.useMutation();
+
+  const {
+    dataId,
+    setDataId,
+    dataType,
+    setDataType,
+    isDeleteAlertOpen,
+    setIsDeleteAlertOpen,
+    resetDeleteControls,
+  } = useDeleteControls();
 
   const {
     timers,
@@ -145,6 +160,8 @@ function AppHomePage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Collapsible
             className="grid grid-cols-1 md:grid-cols-2"
+            isLoading={timerTemplates.isLoading}
+            isQuietLoading={timerTemplates.isRefetching}
             isOpen={isSavedTimersOpen}
             onOpenChange={setIsSavedTimersOpen}
             previewCount={4}
@@ -215,6 +232,11 @@ function AppHomePage() {
                         });
                         setIsTimerModalOpen(true);
                       }}
+                      onDelete={(id) => {
+                        setDataId(id);
+                        setDataType("timer");
+                        setIsDeleteAlertOpen(true);
+                      }}
                       onStop={handleStopTimer}
                       onTemplateSave={(templateDraft) => {
                         setTimerTemplateDetails((t) => ({
@@ -232,11 +254,12 @@ function AppHomePage() {
             title="Time Entries"
           />
           <Collapsible
+            className="grid grid-cols-1 md:grid-cols-2"
             isLoading={projects.isLoading}
             isQuietLoading={projects.isRefetching}
             isOpen={isProjectsOpen}
             onOpenChange={() => setIsProjectsOpen(!isProjectsOpen)}
-            previewCount={3}
+            previewCount={4}
             actions={[
               <CollapsibleActionButton
                 key="project-new"
@@ -253,12 +276,12 @@ function AppHomePage() {
               projects.data
                 ? projects.data.map((project) => (
                     <CollapsibleItem key={project.id}>
-                      <>
-                        <span className="font-semibold">{project.name}</span>
-                        <span className="ml-auto rounded-lg bg-zinc-200 px-3 py-1 text-sm">
-                          7
-                        </span>
-                      </>
+                      <div>
+                        <h5 className="font-semibold">{project.name}</h5>
+                        <h6 className="text-sm leading-none text-zinc-600">
+                          7 Tasks / 3 Recent Timers
+                        </h6>
+                      </div>
                     </CollapsibleItem>
                   ))
                 : []
@@ -337,6 +360,19 @@ function AppHomePage() {
           timerTemplate={timerTemplateDetails}
         />
       </Modal>
+      <Alert
+        title={`Delete ${dataType ? dataTypeReadableNames[dataType] : ""}?`}
+        description="This action cannot be undone. This will permanently remove the data from our servers."
+        isOpen={isDeleteAlertOpen}
+        onOpenChange={setIsDeleteAlertOpen}
+        actionText="Yes, delete"
+        cancelText="Cancel"
+        onAction={() => {
+          if (dataId) void handleDeleteTimer(dataId);
+          resetDeleteControls();
+        }}
+        onCancel={resetDeleteControls}
+      />
     </>
   );
 }

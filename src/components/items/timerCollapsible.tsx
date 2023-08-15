@@ -14,6 +14,7 @@ import Dropdown, { DropdownItem } from "../dropdown";
 import type { SimpleTimer } from "../forms";
 
 interface TimerCollapsibleItemProps {
+  onDelete: (id: string) => void;
   onEdit: (
     timer: SimpleTimer & {
       id: string;
@@ -45,6 +46,7 @@ function formatLength(len: number) {
 }
 
 function TimerCollapsibleItem({
+  onDelete,
   onEdit,
   onStop,
   onTemplateSave,
@@ -108,7 +110,6 @@ function TimerCollapsibleItem({
             <button
               type="button"
               className="items-center justify-center rounded-lg px-2 py-1 hover:bg-zinc-200 group-hover:flex"
-              onClick={console.log}
             >
               <MoreHorizontal className="text-zinc-600" />
             </button>
@@ -137,7 +138,7 @@ function TimerCollapsibleItem({
               </button>
             </DropdownItem>
             <DropdownItem>
-              <button type="button">
+              <button type="button" onClick={() => onDelete(timer.id)}>
                 <Trash2 className="h-5 w-5" />
                 <span>Delete Entry</span>
               </button>
