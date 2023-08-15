@@ -6,7 +6,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { CollapsibleItem } from "../collapsible";
 import { useInterval } from "~/hooks/interval";
 import { cn } from "~/lib/cn";
@@ -23,6 +23,11 @@ interface TimerCollapsibleItemProps {
     }
   ) => void;
   onStop: (id: string) => Promise<void>;
+  onTemplateSave: (templateDraft: {
+    name: string;
+    description: string;
+    projectId: string;
+  }) => void;
   timer: SimpleTimer & {
     id: string;
     project: {
@@ -42,6 +47,7 @@ function formatLength(len: number) {
 function TimerCollapsibleItem({
   onEdit,
   onStop,
+  onTemplateSave,
   timer,
 }: TimerCollapsibleItemProps) {
   const [length, setLength] = useState(-1);
@@ -116,7 +122,16 @@ function TimerCollapsibleItem({
               </button>
             </DropdownItem>
             <DropdownItem>
-              <button type="button">
+              <button
+                type="button"
+                onClick={() =>
+                  onTemplateSave({
+                    name: timer.name,
+                    description: timer.description ?? "",
+                    projectId: timer.projectId,
+                  })
+                }
+              >
                 <Copy className="h-5 w-5" />
                 <span>Save as Template</span>
               </button>
