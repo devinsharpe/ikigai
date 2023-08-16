@@ -1,5 +1,5 @@
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
-import { Home, LayoutDashboard, Plus, Search } from "lucide-react";
+import { LayoutDashboard, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import Collapsible, {
   CollapsibleActionButton,
@@ -21,7 +21,7 @@ import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
 import { api } from "~/utils/api";
 import Alert from "../../components/alert";
-import ContextMenu from "~/components/contextMenu";
+import CurrentTimerDropdown from "~/components/items/currentTimerDropdown";
 
 function AppHomePage() {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
@@ -132,12 +132,25 @@ function AppHomePage() {
     <>
       <form className="sticky top-16 z-[1] w-full bg-white p-2">
         <div className="container mx-auto flex gap-2">
-          <button
-            type="button"
-            className="flex w-16 items-center justify-center rounded-lg border border-zinc-300 hover:bg-zinc-100"
-          >
-            <Home />
-          </button>
+          <CurrentTimerDropdown
+            onEdit={(t) => {
+              if (setActive) void setActive({ organization: t.organization });
+              setTimerDetails({
+                ...t,
+                startedAt: formatDatetimeString(new Date(t.startedAt)),
+                stoppedAt: formatDatetimeString(new Date(t.stoppedAt ?? "")),
+              });
+              setIsTimerModalOpen(true);
+            }}
+            onStart={() => setIsTimerModalOpen(true)}
+            onStop={(id) => void handleStopTimer(id)}
+            onOrgChangeRequest={(org) => {
+              if (setActive)
+                void setActive({
+                  organization: org,
+                });
+            }}
+          />
           <div className="relative w-full">
             <input
               type="text"
