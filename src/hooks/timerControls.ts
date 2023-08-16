@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import type { SimpleTimer } from "~/components/forms";
 import { toTZISOString } from "~/lib/date";
@@ -85,10 +85,37 @@ export function useTimerControls() {
     [timers, deleteTimer]
   );
 
+  const timerDayGroups = useMemo(() => {
+    const groups: Record<
+      string,
+      (SimpleTimer & {
+        id: string;
+        project: {
+          id: string;
+          name: string;
+        };
+      })[]
+    > = {};
+    if (timers.data) {
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      timers.data.forEach((timer) => {
+        let date = new Date(timer.startedAt).toLocaleDateString();
+        if (date === today.toLocaleDateString()) date = "Today";
+        if (date === yesterday.toLocaleDateString()) date = "Yesterday";
+        if (groups[date]) groups[date]!.push(timer);
+        else groups[date] = [timer];
+      });
+    }
+    return groups;
+  }, [timers]);
+
   return {
     isTimerModalOpen,
     setIsTimerModalOpen,
     timers,
+    timerDayGroups,
     timerDetails,
     setTimerDetails,
     createTimer,

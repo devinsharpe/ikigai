@@ -50,6 +50,7 @@ function AppHomePage() {
 
   const {
     timers,
+    timerDayGroups,
     isTimerModalOpen,
     setIsTimerModalOpen,
     timerDetails,
@@ -227,7 +228,7 @@ function AppHomePage() {
             isQuietLoading={timers.isRefetching}
             isOpen={isTimersOpen}
             onOpenChange={() => setIsTimersOpen(!isTimersOpen)}
-            previewCount={3}
+            previewCount={1}
             actions={[
               <CollapsibleActionButton
                 key="time-entry-edit"
@@ -240,9 +241,18 @@ function AppHomePage() {
                 </>
               </CollapsibleActionButton>,
             ]}
-            elements={
-              timers.data
-                ? timers.data.map((timer) => (
+            elements={Object.keys(timerDayGroups).map((day) => (
+              <>
+                <div className="flex items-center gap-4 p-2 text-sm font-semibold">
+                  <div className="h-[1px] w-10 bg-zinc-300" />
+                  <h5 className="shrink-0">
+                    {new Date().toLocaleDateString() === day ? "Today" : day
+                    }
+                  </h5>
+                  <div className="h-[1px] w-full bg-zinc-300" />
+                </div>
+                {timerDayGroups[day] ? (
+                  timerDayGroups[day]!.map((timer) => (
                     <TimerCollapsibleItem
                       onEdit={(t) => {
                         setTimerDetails({
@@ -273,8 +283,11 @@ function AppHomePage() {
                       key={timer.id}
                     />
                   ))
-                : []
-            }
+                ) : (
+                  <></>
+                )}
+              </>
+            ))}
             title="Time Entries"
           />
           <Collapsible
