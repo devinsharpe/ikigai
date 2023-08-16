@@ -1,4 +1,12 @@
-import { Copy, Disc3, List, PauseCircle, Pencil, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Disc3,
+  List,
+  Pause,
+  PauseCircle,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { CollapsibleItem } from "../collapsible";
 import { useInterval } from "~/hooks/interval";
@@ -108,6 +116,14 @@ function TimerCollapsibleItem({
       }
     >
       <>
+        {!timer.stoppedAt && (
+          <ContextMenuItem onClick={() => void onStop(timer.id)}>
+            <>
+              <Pause className="absolute left-5 w-4" />
+              <span>Stop Timer</span>
+            </>
+          </ContextMenuItem>
+        )}
         <ContextMenuItem>
           <>
             <List className="absolute left-5 w-4" />
