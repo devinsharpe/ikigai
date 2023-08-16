@@ -65,13 +65,21 @@ function CurrentTimerDropdown({
             </p>
           </div>
           <DropdownSeparator />
-          <DropdownItem onClick={() => onStop(currentTimer.data.id)}>
+          <DropdownItem
+            onClick={() => {
+              if (currentTimer.data) onStop(currentTimer.data.id);
+            }}
+          >
             <>
               <Pause className="w-5" />
               <span>Stop Timer</span>
             </>
           </DropdownItem>
-          <DropdownItem onClick={() => onEdit(currentTimer.data)}>
+          <DropdownItem
+            onClick={() => {
+              if (currentTimer.data) onEdit(currentTimer.data);
+            }}
+          >
             <>
               <Pencil className="w-5" />
               <span>Edit Details</span>
