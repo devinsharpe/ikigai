@@ -34,7 +34,7 @@
     "@trpc/react-query": "^10.26.0",
     "@trpc/server": "^10.26.0",
     "clsx": "^2.0.0",
-    "drizzle-orm": "^0.27.2",
+    "drizzle-orm": "^0.28.2",
     "lucide-react": "^0.263.1",
     "nanoid": "^4.0.2",
     "next": "^13.4.2",
