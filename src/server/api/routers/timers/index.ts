@@ -76,6 +76,23 @@ export const timersRouter = createTRPCRouter({
       }
       return timer;
     }),
+  current: protectedProcedure.query(async ({ ctx }) => {
+    const timer = await ctx.db.query.timers.findFirst({
+      where: and(
+        eq(timers.createdBy, ctx.auth.userId),
+        isNull(timers.stoppedAt)
+      ),
+      with: {
+        project: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+    return timer ?? null;
+  }),
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {

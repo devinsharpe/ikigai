@@ -13,15 +13,19 @@ const initialTimerData = {
 };
 
 export function useTimerControls() {
+  const utils = api.useContext();
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [timerDetails, setTimerDetails] = useState<
     SimpleTimer & { id?: string }
   >(initialTimerData);
   const timers = api.timers.list.useQuery();
-  const createTimer = api.timers.create.useMutation();
-  const updateTimer = api.timers.update.useMutation();
-  const deleteTimer = api.timers.delete.useMutation();
-  const stopTimer = api.timers.stop.useMutation();
+  const mutationProps = {
+    onSuccess: () => utils.timers.current.invalidate(),
+  };
+  const createTimer = api.timers.create.useMutation(mutationProps);
+  const updateTimer = api.timers.update.useMutation(mutationProps);
+  const deleteTimer = api.timers.delete.useMutation(mutationProps);
+  const stopTimer = api.timers.stop.useMutation(mutationProps);
 
   useEffect(() => {
     if (!isTimerModalOpen) setTimerDetails(initialTimerData);
