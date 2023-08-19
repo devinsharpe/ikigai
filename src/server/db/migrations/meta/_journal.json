@@ -43,6 +43,13 @@
       "when": 1691995112028,
       "tag": "0005_light_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1692476115926,
+      "tag": "0006_brown_midnight",
+      "breakpoints": true
     }
   ]
 }

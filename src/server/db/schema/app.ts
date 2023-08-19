@@ -45,7 +45,11 @@ export const tasks = pgTable("tasks", {
     mode: "string",
     precision: 6,
   }),
-  isActive: boolean("isActive").default(true),
+  activeAt: timestamp("activeAt", {
+    withTimezone: true,
+    mode: "string",
+    precision: 6,
+  }).defaultNow(),
   createdAt: timestamp("createdAt", {
     withTimezone: true,
     mode: "string",
