@@ -126,7 +126,12 @@ function Collapsible({
         {!isLoading && elements.length ? (
           <>
             {elements.slice(0, previewCount).map((el) => el)}
-            <RadixCollapsible.Content className="flex flex-col gap-2">
+            <RadixCollapsible.Content
+              className={cn(
+                "col-span-full flex flex-col gap-2",
+                props.className
+              )}
+            >
               {elements.slice(previewCount).map((el) => el)}
             </RadixCollapsible.Content>
           </>
