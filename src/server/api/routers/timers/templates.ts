@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
-import { projectAccessGuard } from ".";
+import { projectAccessGuard } from "../../utils";
 import { TRPCError } from "@trpc/server";
 import { timerTemplates } from "~/server/db/schema";
 import { createId } from "~/server/db/utils";

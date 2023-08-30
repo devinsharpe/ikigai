@@ -1,8 +1,9 @@
 import { exampleRouter } from "~/server/api/routers/example";
-import { createTRPCRouter } from "~/server/api/trpc";
 import { projectsRouter } from "~/server/api/routers/projects";
 import { timersRouter } from "~/server/api/routers/timers";
 import { timerTemplatesRouter } from "~/server/api/routers/timers/templates";
+import { createTRPCRouter } from "~/server/api/trpc";
+import { tasksRouter } from "./routers/tasks";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +13,7 @@ import { timerTemplatesRouter } from "~/server/api/routers/timers/templates";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   projects: projectsRouter,
+  tasks: tasksRouter,
   timers: timersRouter,
   timerTemplates: timerTemplatesRouter,
 });
