@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, gte, isNull, lt, or } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull, lt, or } from "drizzle-orm";
 import { z } from "zod";
 import { tasks } from "~/server/db/schema";
 import { createId } from "~/server/db/utils";
@@ -9,12 +9,12 @@ import { projectAccessGuard } from "../../utils";
 // create ✅
 // update ✅
 // delete ✅
-// complete
+// complete ✅
 // list
 // list-today ✅
-// list-upcoming
+// list-upcoming ✅
 // list-inbox
-// list-completed
+// list-completed ✅
 
 function getFilterDate(timezoneOffset: number) {
   const filterDate = new Date();
@@ -127,7 +127,7 @@ export const tasksRouter = createTRPCRouter({
             ? [eq(tasks.organization, ctx.auth.orgId)]
             : [isNull(tasks.organization)])
         ),
-        orderBy: desc(tasks.dueDate),
+        orderBy: [desc(tasks.dueDate), asc(tasks.name)],
         with: {
           project: {
             columns: {
@@ -156,7 +156,7 @@ export const tasksRouter = createTRPCRouter({
             ? [eq(tasks.organization, ctx.auth.orgId)]
             : [isNull(tasks.organization)])
         ),
-        orderBy: desc(tasks.dueDate),
+        orderBy: [desc(tasks.dueDate), asc(tasks.name)],
         with: {
           project: {
             columns: {
