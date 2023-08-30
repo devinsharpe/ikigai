@@ -65,6 +65,7 @@ function AppHomePage() {
     tasksCompleted,
     tasksToday,
     tasksUpcoming,
+    taskCompletedProjectGroupCount,
     taskTodayPriorityGroups,
     taskUpcomingPriorityGroups,
     createTask,
@@ -80,6 +81,7 @@ function AppHomePage() {
   const {
     timers,
     timerDayGroups,
+    timerProjectGroupCount,
     isTimerModalOpen,
     setIsTimerModalOpen,
     timerDetails,
@@ -167,7 +169,7 @@ function AppHomePage() {
 
   return (
     <>
-      <form className="sticky top-16 z-[1] w-full bg-white/75 backdrop-blur-lg p-2">
+      <form className="sticky top-16 z-[1] w-full bg-white/75 p-2 backdrop-blur-lg">
         <div className="container mx-auto flex gap-2">
           <CurrentTimerDropdown
             onEdit={(t) => {
@@ -458,7 +460,10 @@ function AppHomePage() {
                       <div>
                         <h5 className="font-semibold">{project.name}</h5>
                         <h6 className="text-sm leading-none text-zinc-600">
-                          7 Tasks / 3 Recent Timers
+                          {taskCompletedProjectGroupCount[project.id] ?? 0}
+                          &nbsp;Tasks / {
+                            timerProjectGroupCount[project.id] ?? 0
+                          } Recent Timers
                         </h6>
                       </div>
                     </CollapsibleItem>

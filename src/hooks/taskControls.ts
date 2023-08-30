@@ -79,6 +79,25 @@ export function useTaskControls(org: string, userId: string) {
     else return [];
   }, [tasksUpcoming]);
 
+  const taskCompletedProjectGroupCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const filterDate = new Date();
+    filterDate.setDate(filterDate.getDate() - 7);
+    if (tasksCompleted.data) {
+      tasksCompleted.data
+        .filter(
+          (task) =>
+            toTZISOString(new Date(task.completedAt!)) >
+            toTZISOString(filterDate)
+        )
+        .forEach((task) => {
+          if (counts[task.project.id]) counts[task.project.id] += 1;
+          else counts[task.project.id] = 1;
+        });
+    }
+    return counts;
+  }, [tasksCompleted]);
+
   const handleTaskComplete = useCallback(
     async (id: string, completed: boolean) => {
       await updateTask.mutateAsync({
@@ -158,6 +177,7 @@ export function useTaskControls(org: string, userId: string) {
     isTaskModalOpen,
     setIsTaskModalOpen,
     taskDetails,
+    taskCompletedProjectGroupCount,
     taskTodayPriorityGroups,
     taskUpcomingPriorityGroups,
     setTaskDetails,

@@ -113,11 +113,31 @@ export function useTimerControls(org: string) {
     return groups;
   }, [timers]);
 
+  const timerProjectGroupCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const filterDate = new Date();
+    filterDate.setDate(filterDate.getDate() - 7);
+    if (timers.data) {
+      timers.data
+        .filter(
+          (timer) =>
+            toTZISOString(new Date(timer.stoppedAt!)) >
+            toTZISOString(filterDate)
+        )
+        .forEach((timer) => {
+          if (counts[timer.project.id]) counts[timer.project.id] += 1;
+          else counts[timer.project.id] = 1;
+        });
+    }
+    return counts;
+  }, [timers]);
+
   return {
     isTimerModalOpen,
     setIsTimerModalOpen,
     timers,
     timerDayGroups,
+    timerProjectGroupCount,
     timerDetails,
     setTimerDetails,
     createTimer,

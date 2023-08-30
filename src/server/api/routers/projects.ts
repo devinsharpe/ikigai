@@ -25,7 +25,6 @@ export const projectsRouter = createTRPCRouter({
         .returning();
       return newProject;
     }),
-  // TODO: adjust query requirements
   list: protectedProcedure.query(async ({ ctx }) => {
     const projectList = await ctx.db.query.projects.findMany({
       where: and(
