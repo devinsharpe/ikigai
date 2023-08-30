@@ -17,7 +17,7 @@ import ContextMenu, {
   ContextMenuSeparater,
 } from "../contextMenu";
 
-interface TimerCollapsibleItemProps {
+export interface TimerCollapsibleItemProps {
   onDelete: (id: string) => void;
   onEdit: (
     timer: SimpleTimer & {
