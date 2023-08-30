@@ -20,7 +20,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           content="#ca8a04"
           media="(prefers-color-scheme: dark)"
         />
-        <link rel="icon" href="https://www.devsharpe.io/api/favicon?emoji=🌼" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <ClerkProvider
         appearance={{
