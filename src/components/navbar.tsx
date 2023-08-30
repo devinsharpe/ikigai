@@ -4,7 +4,7 @@ import Image from "next/image";
 
 function Navbar() {
   return (
-    <nav className="fixed inset-x-0 top-0 z-[1] flex w-full justify-center bg-white p-2">
+    <nav className="fixed inset-x-0 top-0 z-[1] flex w-full justify-center bg-white/75 p-2 backdrop-blur-lg">
       <div className="container flex w-full justify-between py-2">
         <h1 className="text-2xl font-bold tracking-wide text-zinc-800">
           <Link href="/" className="flex items-center gap-2 ">
