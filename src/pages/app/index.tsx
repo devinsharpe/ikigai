@@ -167,7 +167,7 @@ function AppHomePage() {
 
   return (
     <>
-      <form className="sticky top-16 z-[1] w-full bg-white p-2">
+      <form className="sticky top-16 z-[1] w-full bg-white/75 backdrop-blur-lg p-2">
         <div className="container mx-auto flex gap-2">
           <CurrentTimerDropdown
             onEdit={(t) => {

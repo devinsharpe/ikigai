@@ -126,14 +126,19 @@ function Collapsible({
       <div className={cn("flex flex-col gap-2", props.className)}>
         {!isLoading && elements.length ? (
           <>
-            {elements.slice(0, previewCount).map((el) => el)}
+            {elements
+              .filter((el) => !!el)
+              .slice(0, previewCount)
+              .map((el) => el)}
             <RadixCollapsible.Content
               className={cn(
                 "col-span-full flex flex-col gap-2",
                 props.className
               )}
             >
-              {elements.slice(previewCount).map((el) => el)}
+              {elements
+                .filter((el) => !!el)
+                .slice(previewCount).map((el) => el)}
             </RadixCollapsible.Content>
           </>
         ) : (
