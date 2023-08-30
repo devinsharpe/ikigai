@@ -2,6 +2,7 @@ import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { FoldVertical, Loader2, UnfoldVertical } from "lucide-react";
 import { cn } from "~/lib/cn";
 import AppIcon from "./appIcon";
+import { useMemo } from "react";
 
 export function EmptyCollapsibleItem(props: Record<string, unknown>) {
   return (
@@ -95,6 +96,10 @@ function Collapsible({
   title,
   ...props
 }: CollapsibleProps) {
+  const filteredElements = useMemo(() => {
+    return elements.filter((el) => !!el);
+  }, [elements]);
+
   return (
     <RadixCollapsible.Root
       className="flex flex-col gap-2"
@@ -113,7 +118,7 @@ function Collapsible({
           {showCollapseButton && (
             <RadixCollapsible.Trigger
               asChild
-              disabled={elements.length <= previewCount || isLoading}
+              disabled={filteredElements.length <= previewCount || isLoading}
             >
               <CollapsibleActionButton className="rounded-lg p-2 hover:bg-zinc-100">
                 {isOpen ? <FoldVertical /> : <UnfoldVertical />}
@@ -124,28 +129,23 @@ function Collapsible({
       </div>
 
       <div className={cn("flex flex-col gap-2", props.className)}>
-        {!isLoading && elements.length ? (
+        {!isLoading && filteredElements.length ? (
           <>
-            {elements
-              .filter((el) => !!el)
-              .slice(0, previewCount)
-              .map((el) => el)}
+            {filteredElements.slice(0, previewCount).map((el) => el)}
             <RadixCollapsible.Content
               className={cn(
                 "col-span-full flex flex-col gap-2",
                 props.className
               )}
             >
-              {elements
-                .filter((el) => !!el)
-                .slice(previewCount).map((el) => el)}
+              {filteredElements.slice(previewCount).map((el) => el)}
             </RadixCollapsible.Content>
           </>
         ) : (
           <></>
         )}
 
-        {!isLoading && elements.length === 0 ? <EmptyElement /> : <></>}
+        {!isLoading && filteredElements.length === 0 ? <EmptyElement /> : <></>}
 
         {isLoading ? (
           <>
