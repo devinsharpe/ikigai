@@ -1,18 +1,19 @@
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
-import {
-  FoldVertical,
-  FolderOpen,
-  Loader2,
-  UnfoldVertical,
-} from "lucide-react";
+import { FoldVertical, Loader2, UnfoldVertical } from "lucide-react";
 import { cn } from "~/lib/cn";
+import AppIcon from "./appIcon";
 
 export function EmptyCollapsibleItem(props: Record<string, unknown>) {
   return (
-    <CollapsibleItem className="cursor-default justify-center" {...props}>
+    <CollapsibleItem
+      className="cursor-default items-baseline justify-center"
+      {...props}
+    >
       <>
-        <FolderOpen />
-        <p>No items available</p>
+        <p className="italic">Nothing to show here</p>
+        <AppIcon className="h-2 w-2 text-zinc-600" />
+        <AppIcon className="h-3 w-3 text-zinc-400" />
+        <AppIcon className="h-4 w-4 text-zinc-200" />
       </>
     </CollapsibleItem>
   );

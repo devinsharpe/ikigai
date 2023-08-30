@@ -50,7 +50,7 @@ export function ContextMenuItem({
   return (
     <RadixContextMenu.Item
       className={cn(
-        "flex w-full cursor-pointer items-center gap-2 rounded-md p-2 pl-8 text-sm font-medium hover:bg-zinc-100 focus:outline-none md:text-base",
+        "flex w-full cursor-pointer items-center gap-2 rounded-md p-2 pl-10 text-sm font-medium hover:bg-zinc-100 focus:outline-none md:text-base",
         className
       )}
       {...props}
