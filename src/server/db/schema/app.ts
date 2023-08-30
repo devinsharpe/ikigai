@@ -34,7 +34,7 @@ export const tasks = pgTable("tasks", {
   id: varchar("id", idConfig).primaryKey().notNull(),
   name: varchar("name").notNull(),
   description: varchar("description"),
-  priority: smallint("priority").default(0),
+  priority: smallint("priority").notNull().default(0),
   dueDate: timestamp("dueDate", {
     withTimezone: true,
     mode: "string",
@@ -45,6 +45,7 @@ export const tasks = pgTable("tasks", {
     mode: "string",
     precision: 6,
   }),
+  completedBy: varchar("completedBy"),
   activeAt: timestamp("activeAt", {
     withTimezone: true,
     mode: "string",
