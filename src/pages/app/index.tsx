@@ -1,4 +1,5 @@
-import { useOrganization, useOrganizationList } from "@clerk/nextjs";
+import { useOrganization, useOrganizationList, useUser } from "@clerk/nextjs";
+import type { OrganizationMembershipPublicUserData } from "@clerk/nextjs/dist/types/server";
 import { LayoutDashboard, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import Collapsible, {
@@ -7,34 +8,42 @@ import Collapsible, {
 } from "~/components/collapsible";
 import type { SimpleProject } from "~/components/forms";
 import ProjectForm from "~/components/forms/project";
+import TaskForm from "~/components/forms/task";
 import TimerForm from "~/components/forms/timer";
 import TimerTemplateForm from "~/components/forms/timerTemplate";
-import TimerCollapsibleItem from "~/components/items/timerCollapsible";
+import CurrentTimerDropdown from "~/components/items/currentTimerDropdown";
+import TaskCollapsible from "~/components/items/taskCollapsible";
+import TaskPriorityCollapsible from "~/components/items/taskPriorityCollapsible";
+import TimerDayGroupCollapsibleItem from "~/components/items/timerDayGroupCollapsible";
 import TimerTemplateCollapsibleItem from "~/components/items/timerTemplateCollapsible";
 import Modal from "~/components/modal";
 import {
   dataTypeReadableNames,
   useDeleteControls,
 } from "~/hooks/deleteControls";
+import { useTaskControls } from "~/hooks/taskControls";
 import { useTimerControls } from "~/hooks/timerControls";
 import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
 import { api } from "~/utils/api";
 import Alert from "../../components/alert";
-import CurrentTimerDropdown from "~/components/items/currentTimerDropdown";
 
 function AppHomePage() {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isTimersOpen, setIsTimersOpen] = useState(false);
   const [isSavedTimersOpen, setIsSavedTimersOpen] = useState(false);
+  const [isTasksOpen, setIsTasksOpen] = useState(false);
   const [newProjectDetails, setNewProjectDetails] = useState<SimpleProject>({
     name: "",
     description: "",
     organization: "",
   });
-  const currentOrganization = useOrganization();
+  const currentOrganization = useOrganization({
+    membershipList: {},
+  });
   const { organizationList, setActive } = useOrganizationList();
+  const { user } = useUser();
   const projects = api.projects.list.useQuery();
   const createProject = api.projects.create.useMutation();
 
@@ -49,6 +58,26 @@ function AppHomePage() {
   } = useDeleteControls();
 
   const {
+    isTaskModalOpen,
+    setIsTaskModalOpen,
+    taskDetails,
+    setTaskDetails,
+    tasksCompleted,
+    tasksToday,
+    tasksUpcoming,
+    taskTodayPriorityGroups,
+    taskUpcomingPriorityGroups,
+    createTask,
+    updateTask,
+    handleTaskComplete,
+    handleTaskSubmit,
+    handleDeleteTask,
+  } = useTaskControls(
+    currentOrganization.organization ? currentOrganization.organization.id : "",
+    user ? user.id : ""
+  );
+
+  const {
     timers,
     timerDayGroups,
     isTimerModalOpen,
@@ -60,7 +89,9 @@ function AppHomePage() {
     handleDeleteTimer,
     handleTimerSubmit,
     handleStopTimer,
-  } = useTimerControls();
+  } = useTimerControls(
+    currentOrganization.organization ? currentOrganization.organization.id : ""
+  );
 
   const {
     timerTemplates,
@@ -106,25 +137,30 @@ function AppHomePage() {
 
   useEffect(() => {
     void projects.refetch();
+    void tasksCompleted.refetch();
+    void tasksToday.refetch();
+    void tasksUpcoming.refetch();
     void timers.refetch();
     void timerTemplates.refetch();
+    const organization = currentOrganization.organization
+      ? currentOrganization.organization.id
+      : "";
     setNewProjectDetails((p) => ({
       ...p,
-      organization: currentOrganization.organization
-        ? currentOrganization.organization.id
-        : "",
+      organization,
+    }));
+    setTaskDetails((t) => ({
+      ...t,
+      assignedTo: user ? user.id : "",
+      organization,
     }));
     setTimerDetails((t) => ({
       ...t,
-      organization: currentOrganization.organization
-        ? currentOrganization.organization.id
-        : "",
+      organization,
     }));
     setTimerTemplateDetails((t) => ({
       ...t,
-      organization: currentOrganization.organization
-        ? currentOrganization.organization.id
-        : "",
+      organization,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentOrganization.organization]);
@@ -224,6 +260,49 @@ function AppHomePage() {
             title="Saved Timers"
           />
           <Collapsible
+            isLoading={tasksToday.isLoading}
+            isQuietLoading={tasksToday.isRefetching}
+            isOpen={isTasksOpen}
+            onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
+            previewCount={4}
+            elements={taskTodayPriorityGroups.map((tasks, index) => (
+              <TaskPriorityCollapsible
+                key={`tasks-priority-today-${index}`}
+                onCheckedChange={(id, completed) =>
+                  void handleTaskComplete(id, completed)
+                }
+                priority={index}
+                tasks={tasks}
+                isLoading={updateTask.isLoading}
+                onEdit={(t) => {
+                  setTaskDetails({
+                    ...t,
+                    dueDate: formatDatetimeString(new Date(t.dueDate ?? "")),
+                  });
+                  setIsTaskModalOpen(true);
+                }}
+                onDelete={(id) => {
+                  setDataId(id);
+                  setDataType("task");
+                  setIsDeleteAlertOpen(true);
+                }}
+              />
+            ))}
+            actions={[
+              <CollapsibleActionButton
+                key="task-today-edit"
+                title="Edit task"
+                onClick={() => setIsTaskModalOpen(true)}
+              >
+                <>
+                  <Plus />
+                  <span className="sr-only">Edit Task</span>
+                </>
+              </CollapsibleActionButton>,
+            ]}
+            title="Today"
+          />
+          <Collapsible
             isLoading={timers.isLoading}
             isQuietLoading={timers.isRefetching}
             isOpen={isTimersOpen}
@@ -242,53 +321,116 @@ function AppHomePage() {
               </CollapsibleActionButton>,
             ]}
             elements={Object.keys(timerDayGroups).map((day) => (
-              <>
-                <div className="flex items-center gap-4 p-2 text-sm font-semibold">
-                  <div className="h-[1px] w-10 bg-zinc-300" />
-                  <h5 className="shrink-0">
-                    {new Date().toLocaleDateString() === day ? "Today" : day
-                    }
-                  </h5>
-                  <div className="h-[1px] w-full bg-zinc-300" />
-                </div>
-                {timerDayGroups[day] ? (
-                  timerDayGroups[day]!.map((timer) => (
-                    <TimerCollapsibleItem
+              <TimerDayGroupCollapsibleItem
+                key={`timer-day-group-${day}`}
+                day={day}
+                timers={timerDayGroups[day]!}
+                onEdit={(t) => {
+                  setTimerDetails({
+                    ...t,
+                    startedAt: formatDatetimeString(new Date(t.startedAt)),
+                    stoppedAt: formatDatetimeString(
+                      new Date(t.stoppedAt ?? "")
+                    ),
+                  });
+                  setIsTimerModalOpen(true);
+                }}
+                onDelete={(id) => {
+                  setDataId(id);
+                  setDataType("timer");
+                  setIsDeleteAlertOpen(true);
+                }}
+                onStop={handleStopTimer}
+                onTemplateSave={(templateDraft) => {
+                  setTimerTemplateDetails((t) => ({
+                    ...t,
+                    ...templateDraft,
+                  }));
+                  setIsTimerTemplateModalOpen(true);
+                }}
+              />
+            ))}
+            title="Time Entries"
+          />
+          <Collapsible
+            isLoading={tasksUpcoming.isLoading}
+            isQuietLoading={tasksUpcoming.isRefetching}
+            isOpen={isTasksOpen}
+            onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
+            previewCount={2}
+            elements={taskUpcomingPriorityGroups.map((tasks, index) => (
+              <TaskPriorityCollapsible
+                key={`tasks-priority-upcoming-${index}`}
+                onCheckedChange={(id, completed) =>
+                  void handleTaskComplete(id, completed)
+                }
+                priority={index}
+                tasks={tasks}
+                isLoading={updateTask.isLoading}
+                onEdit={(t) => {
+                  setTaskDetails({
+                    ...t,
+                    dueDate: formatDatetimeString(new Date(t.dueDate ?? "")),
+                  });
+                  setIsTaskModalOpen(true);
+                }}
+                onDelete={(id) => {
+                  setDataId(id);
+                  setDataType("task");
+                  setIsDeleteAlertOpen(true);
+                }}
+              />
+            ))}
+            actions={[
+              <CollapsibleActionButton
+                key="task-upcoming-edit"
+                title="Edit task"
+                onClick={() => setIsTaskModalOpen(true)}
+              >
+                <>
+                  <Plus />
+                  <span className="sr-only">Edit Task</span>
+                </>
+              </CollapsibleActionButton>,
+            ]}
+            title="Upcoming"
+          />
+          <Collapsible
+            isLoading={tasksCompleted.isLoading}
+            isQuietLoading={tasksCompleted.isRefetching}
+            isOpen={isTasksOpen}
+            onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
+            previewCount={2}
+            elements={
+              tasksCompleted.data
+                ? tasksCompleted.data.map((task) => (
+                    <TaskCollapsible
+                      key={task.id}
+                      onCheckedChange={(id, completed) =>
+                        void handleTaskComplete(id, completed)
+                      }
+                      task={task}
+                      isLoading={updateTask.isLoading}
                       onEdit={(t) => {
-                        setTimerDetails({
+                        setTaskDetails({
                           ...t,
-                          startedAt: formatDatetimeString(
-                            new Date(t.startedAt)
-                          ),
-                          stoppedAt: formatDatetimeString(
-                            new Date(t.stoppedAt ?? "")
+                          dueDate: formatDatetimeString(
+                            new Date(t.dueDate ?? "")
                           ),
                         });
-                        setIsTimerModalOpen(true);
+                        setIsTaskModalOpen(true);
                       }}
                       onDelete={(id) => {
                         setDataId(id);
-                        setDataType("timer");
+                        setDataType("task");
                         setIsDeleteAlertOpen(true);
                       }}
-                      onStop={handleStopTimer}
-                      onTemplateSave={(templateDraft) => {
-                        setTimerTemplateDetails((t) => ({
-                          ...t,
-                          ...templateDraft,
-                        }));
-                        setIsTimerTemplateModalOpen(true);
-                      }}
-                      timer={timer}
-                      key={timer.id}
                     />
                   ))
-                ) : (
-                  <></>
-                )}
-              </>
-            ))}
-            title="Time Entries"
+                : []
+            }
+            actions={[]}
+            title="Recently Completed"
           />
           <Collapsible
             className="grid grid-cols-1 md:grid-cols-2"
@@ -343,6 +485,39 @@ function AppHomePage() {
           project={newProjectDetails}
           onChange={setNewProjectDetails}
           onSubmit={handleNewProject}
+        />
+      </Modal>
+      <Modal
+        isOpen={isTaskModalOpen}
+        onOpenChange={() => setIsTaskModalOpen(!isTaskModalOpen)}
+        title={taskDetails.id ? "Edit Task" : "New Task"}
+        description="Auth feature? Specific errand? Langauge lessons?"
+      >
+        <TaskForm
+          isLoading={createTask.isLoading || updateTask.isLoading}
+          isLoadingProjects={projects.isLoading || projects.isRefetching}
+          task={taskDetails}
+          projects={projects.data ?? []}
+          onChange={(t) => setTaskDetails({ ...taskDetails, ...t })}
+          onOrgChange={async (org) => {
+            if (setActive) await setActive({ organization: org });
+          }}
+          members={
+            currentOrganization.membershipList
+              ? currentOrganization.membershipList
+                  .filter((member) => !!member.publicUserData.userId)
+                  .map(
+                    (member) =>
+                      member.publicUserData as OrganizationMembershipPublicUserData
+                  )
+              : []
+          }
+          organizations={
+            organizationList
+              ? organizationList.map((org) => org.organization)
+              : []
+          }
+          onSubmit={handleTaskSubmit}
         />
       </Modal>
       <Modal
@@ -406,6 +581,7 @@ function AppHomePage() {
         cancelText="Cancel"
         onAction={() => {
           if (dataId) {
+            if (dataType === "task") void handleDeleteTask(dataId);
             if (dataType === "timer") void handleDeleteTimer(dataId);
             if (dataType === "timerTemplate")
               void handleDeleteTimerTemplate(dataId);
