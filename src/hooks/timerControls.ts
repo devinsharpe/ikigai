@@ -12,12 +12,12 @@ const initialTimerData = {
   stoppedAt: "",
 };
 
-export function useTimerControls() {
+export function useTimerControls(org: string) {
   const utils = api.useContext();
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [timerDetails, setTimerDetails] = useState<
     SimpleTimer & { id?: string }
-  >(initialTimerData);
+  >({ ...initialTimerData, organization: org });
   const timers = api.timers.list.useQuery();
   const mutationProps = {
     onSuccess: () => utils.timers.current.invalidate(),
@@ -28,8 +28,10 @@ export function useTimerControls() {
   const stopTimer = api.timers.stop.useMutation(mutationProps);
 
   useEffect(() => {
-    if (!isTimerModalOpen) setTimerDetails(initialTimerData);
-  }, [isTimerModalOpen, setTimerDetails]);
+    if (!isTimerModalOpen)
+      setTimerDetails({ ...initialTimerData, organization: org });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTimerModalOpen]);
 
   const handleTimerSubmit = useCallback(
     async (timer: SimpleTimer & { id?: string }) => {

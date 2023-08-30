@@ -35,20 +35,6 @@ function TimerForm({
   const [isStartEnabled, setIsStartEnabled] = useState(false);
   const [isEndEnabled, setIsEndEnabled] = useState(false);
 
-  // useEffect(() => {
-  //   onChange({
-  //     startedAt: isStartEnabled ? formatDatetimeString(new Date()) : "",
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isStartEnabled]);
-
-  // useEffect(() => {
-  //   onChange({
-  //     stoppedAt: isEndEnabled ? formatDatetimeString(new Date()) : "",
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isEndEnabled]);
-
   useEffect(() => {
     if (timer.id) {
       setIsStartEnabled(!!timer.startedAt);
