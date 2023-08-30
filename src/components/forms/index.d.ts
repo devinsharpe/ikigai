@@ -9,6 +9,16 @@ export interface SimpleProject {
   organization: string | null;
 }
 
+export interface SimpleTask {
+  name: string;
+  description: string | null;
+  priority: number;
+  dueDate: string | null;
+  projectId: string;
+  organization: string | null;
+  assignedTo: string;
+}
+
 export interface SimpleTimer {
   name: string;
   description: string | null;

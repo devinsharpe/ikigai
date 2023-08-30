@@ -1,8 +1,9 @@
 import { useCallback, useState } from "react";
 
-type dataType = "timer" | "timerTemplate" | "project";
+type dataType = "task" | "timer" | "timerTemplate" | "project";
 
 export const dataTypeReadableNames: Record<dataType, string> = {
+  task: "Task",
   timer: "Timer",
   timerTemplate: "Saved Timer",
   project: "Project",
