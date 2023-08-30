@@ -147,10 +147,11 @@ export function useTaskControls(org: string, userId: string) {
   const handleDeleteTask = useCallback(
     async (id: string) => {
       await deleteTask.mutateAsync({ id });
+      void tasksCompleted.refetch();
       void tasksToday.refetch();
       void tasksUpcoming.refetch();
     },
-    [tasksToday, tasksUpcoming, deleteTask]
+    [tasksToday, tasksUpcoming, tasksCompleted, deleteTask]
   );
 
   return {
