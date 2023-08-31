@@ -1,4 +1,3 @@
 {
-  "buildCommand": "pnpm migrate && pnpm build",
-  "framework": "nextjs"
+  "buildCommand": "pnpm migrate && pnpm build"
 }
