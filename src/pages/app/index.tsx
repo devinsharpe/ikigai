@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import Collapsible, {
   CollapsibleActionButton,
   CollapsibleItem,
+  EmptyCollapsibleItem,
 } from "~/components/collapsible";
 import type { SimpleProject } from "~/components/forms";
 import ProjectForm from "~/components/forms/project";
@@ -233,6 +234,9 @@ function AppHomePage() {
                   </>
                 </CollapsibleActionButton>,
               ]}
+              EmptyElement={() => (
+                <EmptyCollapsibleItem className="justify-center md:col-span-2" />
+              )}
               elements={
                 timerTemplates.data
                   ? timerTemplates.data.map((timerTemplate) => (
@@ -456,6 +460,9 @@ function AppHomePage() {
                   </>
                 </CollapsibleActionButton>,
               ]}
+              EmptyElement={() => (
+                <EmptyCollapsibleItem className="justify-center md:col-span-2" />
+              )}
               elements={
                 projects.data
                   ? projects.data.map((project) => (
