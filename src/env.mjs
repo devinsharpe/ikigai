@@ -8,13 +8,8 @@ export const env = createEnv({
    */
   server: {
     CLERK_SECRET_KEY: z.string(),
-    MIGRATE_URL: z.string().url(),
+    DB_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "test", "production"]),
-    // Database Settings
-    PGDATABASE: z.string(),
-    PGHOST: z.string(),
-    PGPASSWORD: z.string(),
-    PGUSER: z.string(),
   },
 
   /**
@@ -37,12 +32,7 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    // Database Settings
-    MIGRATE_URL: process.env.MIGRATE_URL,
-    PGDATABASE: process.env.PGDATABASE,
-    PGHOST: process.env.PGHOST,
-    PGPASSWORD: process.env.PGPASSWORD,
-    PGUSER: process.env.PGUSER,
+    DB_URL: process.env.DB_URL,
     // Client Settings
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,

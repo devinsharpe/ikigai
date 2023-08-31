@@ -7,7 +7,7 @@ const config = {
   out: "./src/server/db/migrations/",
   driver: "pg",
   dbCredentials: {
-    connectionString: process.env.MIGRATE_URL!,
+    connectionString: process.env.DB_URL!,
   },
 } satisfies Config;
 
