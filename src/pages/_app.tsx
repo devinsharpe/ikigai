@@ -21,6 +21,27 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           media="(prefers-color-scheme: dark)"
         />
         <link rel="icon" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/icons/apple_touch_180x180.png" />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="180x180"
+          href="/icons/apple_touch_180x180.png"
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="167x167"
+          href="/icons/apple_touch_167x167.png"
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="152x152"
+          href="/icons/apple_touch_152x152.png"
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="120x120"
+          href="/icons/apple_touch_120x120.png"
+        />
       </Head>
       <ClerkProvider
         appearance={{
