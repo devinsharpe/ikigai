@@ -26,7 +26,7 @@ export function CollapsibleActionButton(
   return (
     <button
       className={cn(
-        "flex items-center justify-center rounded-lg p-2 hover:bg-zinc-100",
+        "flex items-center justify-center rounded-lg p-2 hover:bg-zinc-100 disabled:opacity-50",
         props.className
       )}
       {...props}
@@ -120,7 +120,7 @@ function Collapsible({
               asChild
               disabled={filteredElements.length <= previewCount || isLoading}
             >
-              <CollapsibleActionButton className="rounded-lg p-2 hover:bg-zinc-100">
+              <CollapsibleActionButton className="rounded-lg p-2 hover:bg-zinc-100 disabled:opacity-50">
                 {isOpen ? <FoldVertical /> : <UnfoldVertical />}
               </CollapsibleActionButton>
             </RadixCollapsible.Trigger>
