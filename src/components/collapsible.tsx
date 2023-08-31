@@ -4,10 +4,16 @@ import { cn } from "~/lib/cn";
 import AppIcon from "./appIcon";
 import { useMemo } from "react";
 
-export function EmptyCollapsibleItem(props: Record<string, unknown>) {
+export function EmptyCollapsibleItem(props: {
+  className?: string;
+  [key: string]: unknown;
+}) {
   return (
     <CollapsibleItem
-      className="cursor-default items-baseline justify-center"
+      className={cn(
+        "cursor-default items-baseline justify-center",
+        props.className
+      )}
       {...props}
     >
       <>
