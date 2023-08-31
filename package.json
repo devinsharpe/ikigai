@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.23.1",
-    "@neondatabase/serverless": "^0.5.6",
+    "@neondatabase/serverless": "^0.6.0",
     "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-context-menu": "^2.1.4",
