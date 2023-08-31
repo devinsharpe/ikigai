@@ -20,7 +20,8 @@ function getFilterDate(timezoneOffset: number) {
   const filterDate = new Date();
   filterDate.setDate(filterDate.getDate() + 1);
   filterDate.setHours(0);
-  filterDate.setMinutes(timezoneOffset);
+  filterDate.setMinutes(0);
+  filterDate.setMinutes(timezoneOffset - filterDate.getTimezoneOffset());
   filterDate.setSeconds(0);
   filterDate.setMilliseconds(0);
   return filterDate;
@@ -127,7 +128,7 @@ export const tasksRouter = createTRPCRouter({
             ? [eq(tasks.organization, ctx.auth.orgId)]
             : [isNull(tasks.organization)])
         ),
-        orderBy: [desc(tasks.dueDate), asc(tasks.name)],
+        orderBy: [asc(tasks.dueDate), asc(tasks.name)],
         with: {
           project: {
             columns: {
@@ -156,7 +157,7 @@ export const tasksRouter = createTRPCRouter({
             ? [eq(tasks.organization, ctx.auth.orgId)]
             : [isNull(tasks.organization)])
         ),
-        orderBy: [desc(tasks.dueDate), asc(tasks.name)],
+        orderBy: [asc(tasks.dueDate), asc(tasks.name)],
         with: {
           project: {
             columns: {
