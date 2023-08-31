@@ -1,28 +1,21 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
+// import { neonConfig } from "@neondatabase/serverless";
 
-import { drizzle } from "drizzle-orm/neon-serverless";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import { env } from "~/env.mjs";
 import schema from "./schema";
 
-if (!process.env.VERCEL_ENV) {
-  neonConfig.wsProxy = (host) => `${host}:5433/v1`;
-  neonConfig.useSecureWebSocket = false;
-  neonConfig.pipelineTLS = false;
-  neonConfig.pipelineConnect = false;
-}
+// if (!process.env.VERCEL_ENV) {
+//   neonConfig.wsProxy = (host) => `${host}:5433/v1`;
+//   neonConfig.useSecureWebSocket = false;
+//   neonConfig.pipelineTLS = false;
+//   neonConfig.pipelineConnect = false;
+// }
 
-const db = drizzle(
-  new Pool({
-    host: env.PGHOST,
-    user: env.PGUSER,
-    password: env.PGPASSWORD,
-    database: env.PGDATABASE,
-    port: process.env.VERCEL_ENV ? undefined : 5433,
-  }),
-  {
-    schema,
-  }
-);
+console.log("DB_URL: ", env.MIGRATE_URL);
+const db = drizzle(neon(env.MIGRATE_URL), {
+  schema,
+});
 
 export default db;
 
