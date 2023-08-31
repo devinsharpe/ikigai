@@ -27,6 +27,7 @@ import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
 import { api } from "~/utils/api";
 import Alert from "../../components/alert";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 function AppHomePage() {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
@@ -211,268 +212,272 @@ function AppHomePage() {
         </div>
       </form>
       <main className="container mx-auto flex min-h-screen flex-col flex-col gap-4 px-2 pb-6 pt-20">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <Collapsible
-            className="grid grid-cols-1 md:grid-cols-2"
-            isLoading={timerTemplates.isLoading}
-            isQuietLoading={timerTemplates.isRefetching}
-            isOpen={isSavedTimersOpen}
-            onOpenChange={setIsSavedTimersOpen}
-            previewCount={4}
-            actions={[
-              <CollapsibleActionButton
-                key="time-entry-template-edit"
-                title="Edit time entry template"
-                onClick={() => setIsTimerTemplateModalOpen(true)}
-              >
-                <>
-                  <Plus />
-                  <span className="sr-only">Edit Time Entry Template</span>
-                </>
-              </CollapsibleActionButton>,
-            ]}
-            elements={
-              timerTemplates.data
-                ? timerTemplates.data.map((timerTemplate) => (
-                    <TimerTemplateCollapsibleItem
-                      key={timerTemplate.id}
-                      isLoading={createTimer.isLoading}
-                      onDelete={(id) => {
-                        setDataId(id);
-                        setDataType("timerTemplate");
-                        setIsDeleteAlertOpen(true);
-                      }}
-                      onEdit={(t) => {
-                        setTimerTemplateDetails(t);
-                        setIsTimerTemplateModalOpen(true);
-                      }}
-                      onTimerStart={async (timer) =>
-                        await handleTimerSubmit({
-                          ...timer,
-                          startedAt: new Date().toISOString(),
-                          stoppedAt: null,
-                          organization: timerDetails.organization,
-                        })
-                      }
-                      timerTemplate={timerTemplate}
-                    />
-                  ))
-                : []
-            }
-            title="Saved Timers"
-          />
-          <Collapsible
-            isLoading={tasksToday.isLoading}
-            isQuietLoading={tasksToday.isRefetching}
-            isOpen={isTasksOpen}
-            onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
-            previewCount={4}
-            elements={taskTodayPriorityGroups.map((tasks, index) => (
-              <TaskPriorityCollapsible
-                key={`tasks-priority-today-${index}`}
-                onCheckedChange={(id, completed) =>
-                  void handleTaskComplete(id, completed)
-                }
-                priority={index}
-                tasks={tasks}
-                isLoading={updateTask.isLoading}
-                onEdit={(t) => {
-                  setTaskDetails({
-                    ...t,
-                    dueDate: formatDatetimeString(new Date(t.dueDate ?? "")),
-                  });
-                  setIsTaskModalOpen(true);
-                }}
-                onDelete={(id) => {
-                  setDataId(id);
-                  setDataType("task");
-                  setIsDeleteAlertOpen(true);
-                }}
-              />
-            ))}
-            actions={[
-              <CollapsibleActionButton
-                key="task-today-edit"
-                title="Edit task"
-                onClick={() => setIsTaskModalOpen(true)}
-              >
-                <>
-                  <Plus />
-                  <span className="sr-only">Edit Task</span>
-                </>
-              </CollapsibleActionButton>,
-            ]}
-            title="Today"
-          />
-          <Collapsible
-            isLoading={timers.isLoading}
-            isQuietLoading={timers.isRefetching}
-            isOpen={isTimersOpen}
-            onOpenChange={() => setIsTimersOpen(!isTimersOpen)}
-            previewCount={1}
-            actions={[
-              <CollapsibleActionButton
-                key="time-entry-edit"
-                title="Edit time entry"
-                onClick={() => setIsTimerModalOpen(true)}
-              >
-                <>
-                  <Plus />
-                  <span className="sr-only">Edit Time Entry</span>
-                </>
-              </CollapsibleActionButton>,
-            ]}
-            elements={Object.keys(timerDayGroups).map((day) => (
-              <TimerDayGroupCollapsibleItem
-                key={`timer-day-group-${day}`}
-                day={day}
-                timers={timerDayGroups[day]!}
-                onEdit={(t) => {
-                  setTimerDetails({
-                    ...t,
-                    startedAt: formatDatetimeString(new Date(t.startedAt)),
-                    stoppedAt: formatDatetimeString(
-                      new Date(t.stoppedAt ?? "")
-                    ),
-                  });
-                  setIsTimerModalOpen(true);
-                }}
-                onDelete={(id) => {
-                  setDataId(id);
-                  setDataType("timer");
-                  setIsDeleteAlertOpen(true);
-                }}
-                onStop={handleStopTimer}
-                onTemplateSave={(templateDraft) => {
-                  setTimerTemplateDetails((t) => ({
-                    ...t,
-                    ...templateDraft,
-                  }));
-                  setIsTimerTemplateModalOpen(true);
-                }}
-              />
-            ))}
-            title="Time Entries"
-          />
-          <Collapsible
-            isLoading={tasksUpcoming.isLoading}
-            isQuietLoading={tasksUpcoming.isRefetching}
-            isOpen={isTasksOpen}
-            onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
-            previewCount={2}
-            elements={taskUpcomingPriorityGroups.map((tasks, index) => (
-              <TaskPriorityCollapsible
-                key={`tasks-priority-upcoming-${index}`}
-                onCheckedChange={(id, completed) =>
-                  void handleTaskComplete(id, completed)
-                }
-                priority={index}
-                tasks={tasks}
-                isLoading={updateTask.isLoading}
-                onEdit={(t) => {
-                  setTaskDetails({
-                    ...t,
-                    dueDate: formatDatetimeString(new Date(t.dueDate ?? "")),
-                  });
-                  setIsTaskModalOpen(true);
-                }}
-                onDelete={(id) => {
-                  setDataId(id);
-                  setDataType("task");
-                  setIsDeleteAlertOpen(true);
-                }}
-              />
-            ))}
-            actions={[
-              <CollapsibleActionButton
-                key="task-upcoming-edit"
-                title="Edit task"
-                onClick={() => setIsTaskModalOpen(true)}
-              >
-                <>
-                  <Plus />
-                  <span className="sr-only">Edit Task</span>
-                </>
-              </CollapsibleActionButton>,
-            ]}
-            title="Upcoming"
-          />
-          <Collapsible
-            isLoading={tasksCompleted.isLoading}
-            isQuietLoading={tasksCompleted.isRefetching}
-            isOpen={isTasksOpen}
-            onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
-            previewCount={2}
-            elements={
-              tasksCompleted.data
-                ? tasksCompleted.data.map((task) => (
-                    <TaskCollapsible
-                      key={task.id}
-                      onCheckedChange={(id, completed) =>
-                        void handleTaskComplete(id, completed)
-                      }
-                      task={task}
-                      isLoading={updateTask.isLoading}
-                      onEdit={(t) => {
-                        setTaskDetails({
-                          ...t,
-                          dueDate: formatDatetimeString(
-                            new Date(t.dueDate ?? "")
-                          ),
-                        });
-                        setIsTaskModalOpen(true);
-                      }}
-                      onDelete={(id) => {
-                        setDataId(id);
-                        setDataType("task");
-                        setIsDeleteAlertOpen(true);
-                      }}
-                    />
-                  ))
-                : []
-            }
-            actions={[]}
-            title="Recently Completed"
-          />
-          <Collapsible
-            className="grid grid-cols-1 md:grid-cols-2"
-            isLoading={projects.isLoading}
-            isQuietLoading={projects.isRefetching}
-            isOpen={isProjectsOpen}
-            onOpenChange={() => setIsProjectsOpen(!isProjectsOpen)}
-            previewCount={4}
-            actions={[
-              <CollapsibleActionButton
-                key="project-new"
-                title="New Project"
-                onClick={() => setIsNewProjectOpen(true)}
-              >
-                <>
-                  <Plus />
-                  <span className="sr-only">New Project</span>
-                </>
-              </CollapsibleActionButton>,
-            ]}
-            elements={
-              projects.data
-                ? projects.data.map((project) => (
-                    <CollapsibleItem key={project.id}>
-                      <div>
-                        <h5 className="font-semibold">{project.name}</h5>
-                        <h6 className="text-sm leading-none text-zinc-600">
-                          {taskCompletedProjectGroupCount[project.id] ?? 0}
-                          &nbsp;Tasks / {
-                            timerProjectGroupCount[project.id] ?? 0
-                          } Recent Timers
-                        </h6>
-                      </div>
-                    </CollapsibleItem>
-                  ))
-                : []
-            }
-            title="Projects"
-          />
-        </div>
+        <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 1024: 2 }}>
+          <Masonry gutter="1.5rem">
+            <Collapsible
+              className="grid grid-cols-1 md:grid-cols-2"
+              isLoading={timerTemplates.isLoading}
+              isQuietLoading={timerTemplates.isRefetching}
+              isOpen={isSavedTimersOpen}
+              onOpenChange={setIsSavedTimersOpen}
+              previewCount={4}
+              actions={[
+                <CollapsibleActionButton
+                  key="time-entry-template-edit"
+                  title="Edit time entry template"
+                  onClick={() => setIsTimerTemplateModalOpen(true)}
+                >
+                  <>
+                    <Plus />
+                    <span className="sr-only">Edit Time Entry Template</span>
+                  </>
+                </CollapsibleActionButton>,
+              ]}
+              elements={
+                timerTemplates.data
+                  ? timerTemplates.data.map((timerTemplate) => (
+                      <TimerTemplateCollapsibleItem
+                        key={timerTemplate.id}
+                        isLoading={createTimer.isLoading}
+                        onDelete={(id) => {
+                          setDataId(id);
+                          setDataType("timerTemplate");
+                          setIsDeleteAlertOpen(true);
+                        }}
+                        onEdit={(t) => {
+                          setTimerTemplateDetails(t);
+                          setIsTimerTemplateModalOpen(true);
+                        }}
+                        onTimerStart={async (timer) =>
+                          await handleTimerSubmit({
+                            ...timer,
+                            startedAt: new Date().toISOString(),
+                            stoppedAt: null,
+                            organization: timerDetails.organization,
+                          })
+                        }
+                        timerTemplate={timerTemplate}
+                      />
+                    ))
+                  : []
+              }
+              title="Saved Timers"
+            />
+            <Collapsible
+              isLoading={tasksToday.isLoading}
+              isQuietLoading={tasksToday.isRefetching}
+              isOpen={isTasksOpen}
+              onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
+              previewCount={4}
+              showCollapseButton={false}
+              elements={taskTodayPriorityGroups.map((tasks, index) => (
+                <TaskPriorityCollapsible
+                  key={`tasks-priority-today-${index}`}
+                  onCheckedChange={(id, completed) =>
+                    void handleTaskComplete(id, completed)
+                  }
+                  priority={index}
+                  tasks={tasks}
+                  isLoading={updateTask.isLoading}
+                  onEdit={(t) => {
+                    setTaskDetails({
+                      ...t,
+                      dueDate: formatDatetimeString(new Date(t.dueDate ?? "")),
+                    });
+                    setIsTaskModalOpen(true);
+                  }}
+                  onDelete={(id) => {
+                    setDataId(id);
+                    setDataType("task");
+                    setIsDeleteAlertOpen(true);
+                  }}
+                />
+              ))}
+              actions={[
+                <CollapsibleActionButton
+                  key="task-today-edit"
+                  title="Edit task"
+                  onClick={() => setIsTaskModalOpen(true)}
+                >
+                  <>
+                    <Plus />
+                    <span className="sr-only">Edit Task</span>
+                  </>
+                </CollapsibleActionButton>,
+              ]}
+              title="Today"
+            />
+            <Collapsible
+              isLoading={timers.isLoading}
+              isQuietLoading={timers.isRefetching}
+              isOpen={isTimersOpen}
+              onOpenChange={() => setIsTimersOpen(!isTimersOpen)}
+              previewCount={2}
+              actions={[
+                <CollapsibleActionButton
+                  key="time-entry-edit"
+                  title="Edit time entry"
+                  onClick={() => setIsTimerModalOpen(true)}
+                >
+                  <>
+                    <Plus />
+                    <span className="sr-only">Edit Time Entry</span>
+                  </>
+                </CollapsibleActionButton>,
+              ]}
+              elements={Object.keys(timerDayGroups).map((day) => (
+                <TimerDayGroupCollapsibleItem
+                  key={`timer-day-group-${day}`}
+                  day={day}
+                  timers={timerDayGroups[day]!}
+                  onEdit={(t) => {
+                    setTimerDetails({
+                      ...t,
+                      startedAt: formatDatetimeString(new Date(t.startedAt)),
+                      stoppedAt: formatDatetimeString(
+                        new Date(t.stoppedAt ?? "")
+                      ),
+                    });
+                    setIsTimerModalOpen(true);
+                  }}
+                  onDelete={(id) => {
+                    setDataId(id);
+                    setDataType("timer");
+                    setIsDeleteAlertOpen(true);
+                  }}
+                  onStop={handleStopTimer}
+                  onTemplateSave={(templateDraft) => {
+                    setTimerTemplateDetails((t) => ({
+                      ...t,
+                      ...templateDraft,
+                    }));
+                    setIsTimerTemplateModalOpen(true);
+                  }}
+                />
+              ))}
+              title="Time Entries"
+            />
+            <Collapsible
+              isLoading={tasksUpcoming.isLoading}
+              isQuietLoading={tasksUpcoming.isRefetching}
+              isOpen={isTasksOpen}
+              onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
+              previewCount={2}
+              elements={taskUpcomingPriorityGroups.map((tasks, index) => (
+                <TaskPriorityCollapsible
+                  key={`tasks-priority-upcoming-${index}`}
+                  onCheckedChange={(id, completed) =>
+                    void handleTaskComplete(id, completed)
+                  }
+                  priority={index}
+                  tasks={tasks}
+                  isLoading={updateTask.isLoading}
+                  onEdit={(t) => {
+                    setTaskDetails({
+                      ...t,
+                      dueDate: formatDatetimeString(new Date(t.dueDate ?? "")),
+                    });
+                    setIsTaskModalOpen(true);
+                  }}
+                  onDelete={(id) => {
+                    setDataId(id);
+                    setDataType("task");
+                    setIsDeleteAlertOpen(true);
+                  }}
+                />
+              ))}
+              actions={[
+                <CollapsibleActionButton
+                  key="task-upcoming-edit"
+                  title="Edit task"
+                  onClick={() => setIsTaskModalOpen(true)}
+                >
+                  <>
+                    <Plus />
+                    <span className="sr-only">Edit Task</span>
+                  </>
+                </CollapsibleActionButton>,
+              ]}
+              title="Upcoming"
+            />
+            <Collapsible
+              isLoading={tasksCompleted.isLoading}
+              isQuietLoading={tasksCompleted.isRefetching}
+              isOpen={isTasksOpen}
+              onOpenChange={() => setIsTasksOpen(!isTasksOpen)}
+              previewCount={2}
+              elements={
+                tasksCompleted.data
+                  ? tasksCompleted.data.map((task) => (
+                      <TaskCollapsible
+                        key={task.id}
+                        onCheckedChange={(id, completed) =>
+                          void handleTaskComplete(id, completed)
+                        }
+                        task={task}
+                        isLoading={updateTask.isLoading}
+                        onEdit={(t) => {
+                          setTaskDetails({
+                            ...t,
+                            dueDate: formatDatetimeString(
+                              new Date(t.dueDate ?? "")
+                            ),
+                          });
+                          setIsTaskModalOpen(true);
+                        }}
+                        onDelete={(id) => {
+                          setDataId(id);
+                          setDataType("task");
+                          setIsDeleteAlertOpen(true);
+                        }}
+                      />
+                    ))
+                  : []
+              }
+              actions={[]}
+              title="Recently Completed"
+            />
+            <Collapsible
+              className="grid grid-cols-1 md:grid-cols-2"
+              isLoading={projects.isLoading}
+              isQuietLoading={projects.isRefetching}
+              isOpen={isProjectsOpen}
+              onOpenChange={() => setIsProjectsOpen(!isProjectsOpen)}
+              previewCount={4}
+              actions={[
+                <CollapsibleActionButton
+                  key="project-new"
+                  title="New Project"
+                  onClick={() => setIsNewProjectOpen(true)}
+                >
+                  <>
+                    <Plus />
+                    <span className="sr-only">New Project</span>
+                  </>
+                </CollapsibleActionButton>,
+              ]}
+              elements={
+                projects.data
+                  ? projects.data.map((project) => (
+                      <CollapsibleItem key={project.id}>
+                        <div>
+                          <h5 className="font-semibold">{project.name}</h5>
+                          <h6 className="text-sm leading-none text-zinc-600">
+                            {taskCompletedProjectGroupCount[project.id] ?? 0}
+                            &nbsp;Tasks /{" "}
+                            {timerProjectGroupCount[project.id] ?? 0} Recent
+                            Timers
+                          </h6>
+                        </div>
+                      </CollapsibleItem>
+                    ))
+                  : []
+              }
+              title="Projects"
+            />
+          </Masonry>
+        </ResponsiveMasonry>
+        {/* </div> */}
       </main>
       <Modal
         isOpen={createProject.isLoading || isNewProjectOpen}
