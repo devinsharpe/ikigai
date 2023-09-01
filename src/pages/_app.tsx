@@ -20,6 +20,13 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           content="#ca8a04"
           media="(prefers-color-scheme: dark)"
         />
+        <meta property="og:image" content="/og_image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:title"
+          content="Ikigai - Task Management & more..."
+        />
         <link rel="icon" href="/favicon.png" />
         <link rel="apple-touch-icon" href="/icons/apple_touch_180x180.png" />
         <link
