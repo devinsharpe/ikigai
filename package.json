@@ -36,6 +36,7 @@
     "@trpc/server": "^10.38.1",
     "clsx": "^2.0.0",
     "drizzle-orm": "^0.28.2",
+    "drizzle-zod": "^0.5.1",
     "lucide-react": "^0.263.1",
     "nanoid": "^4.0.2",
     "next": "^13.4.2",
