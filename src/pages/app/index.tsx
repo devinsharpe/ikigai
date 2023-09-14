@@ -1,7 +1,8 @@
 import { useOrganization, useOrganizationList, useUser } from "@clerk/nextjs";
 import type { OrganizationMembershipPublicUserData } from "@clerk/nextjs/dist/types/server";
-import { LayoutDashboard, Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import Collapsible, {
   CollapsibleActionButton,
   CollapsibleItem,
@@ -12,12 +13,12 @@ import ProjectForm from "~/components/forms/project";
 import TaskForm from "~/components/forms/task";
 import TimerForm from "~/components/forms/timer";
 import TimerTemplateForm from "~/components/forms/timerTemplate";
-import CurrentTimerDropdown from "~/components/items/currentTimerDropdown";
 import TaskCollapsible from "~/components/items/taskCollapsible";
 import TaskPriorityCollapsible from "~/components/items/taskPriorityCollapsible";
 import TimerDayGroupCollapsibleItem from "~/components/items/timerDayGroupCollapsible";
 import TimerTemplateCollapsibleItem from "~/components/items/timerTemplateCollapsible";
 import Modal from "~/components/modal";
+import SearchNav from "~/components/searchNav";
 import {
   dataTypeReadableNames,
   useDeleteControls,
@@ -26,28 +27,19 @@ import { useTaskControls } from "~/hooks/taskControls";
 import { useTimerControls } from "~/hooks/timerControls";
 import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
-import { api } from "~/utils/api";
 import Alert from "../../components/alert";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { useProjectControls } from "~/hooks/projectControls";
 
 function AppHomePage() {
-  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isTimersOpen, setIsTimersOpen] = useState(false);
   const [isSavedTimersOpen, setIsSavedTimersOpen] = useState(false);
   const [isTasksOpen, setIsTasksOpen] = useState(false);
-  const [newProjectDetails, setNewProjectDetails] = useState<SimpleProject>({
-    name: "",
-    description: "",
-    organization: "",
-  });
   const currentOrganization = useOrganization({
     membershipList: {},
   });
   const { organizationList, setActive } = useOrganizationList();
   const { user } = useUser();
-  const projects = api.projects.list.useQuery();
-  const createProject = api.projects.create.useMutation();
 
   const {
     dataId,
@@ -58,6 +50,21 @@ function AppHomePage() {
     setIsDeleteAlertOpen,
     resetDeleteControls,
   } = useDeleteControls();
+
+  const {
+    isNewProjectOpen,
+    setIsNewProjectOpen,
+    newProjectDetails,
+    setNewProjectDetails,
+    projects,
+    createProject,
+  } = useProjectControls(
+    currentOrganization.organization ? currentOrganization.organization.id : "",
+    {
+      id: undefined,
+      list: true,
+    }
+  );
 
   const {
     isTaskModalOpen,
@@ -171,10 +178,10 @@ function AppHomePage() {
 
   return (
     <>
-      <form className="sticky top-16 z-[1] w-full bg-white/75 p-2 backdrop-blur-lg">
-        <div className="container mx-auto flex gap-2">
-          <CurrentTimerDropdown
-            onEdit={(t) => {
+      <main className="container mx-auto flex min-h-screen flex-col gap-4 px-2 pb-6 pt-20">
+        <SearchNav
+          currentTimerControls={{
+            onEdit: (t) => {
               if (setActive) void setActive({ organization: t.organization });
               setTimerDetails({
                 ...t,
@@ -182,37 +189,17 @@ function AppHomePage() {
                 stoppedAt: formatDatetimeString(new Date(t.stoppedAt ?? "")),
               });
               setIsTimerModalOpen(true);
-            }}
-            onStart={() => setIsTimerModalOpen(true)}
-            onStop={(id) => void handleStopTimer(id)}
-            onOrgChangeRequest={(org) => {
+            },
+            onStart: () => setIsTimerModalOpen(true),
+            onStop: (id) => void handleStopTimer(id),
+            onOrgChangeRequest: (org) => {
               if (setActive)
                 void setActive({
                   organization: org,
                 });
-            }}
-          />
-          <div className="relative w-full">
-            <input
-              type="text"
-              className="w-full rounded-lg border border-zinc-300 bg-white p-3 pl-10 text-zinc-800"
-              placeholder="Search Projects, Tasks, Notes, etc."
-            />
-            <span className="absolute bottom-0 left-2 top-0 flex h-full items-center justify-center pl-2">
-              <Search className="h-4 w-4" />
-            </span>
-          </div>
-          <button
-            type="button"
-            className="flex w-16 items-center justify-center rounded-lg border border-zinc-300 hover:bg-zinc-100"
-            onClick={console.log}
-          >
-            <LayoutDashboard />
-            <span className="sr-only">Edit Dashboard</span>
-          </button>
-        </div>
-      </form>
-      <main className="container mx-auto flex min-h-screen flex-col flex-col gap-4 px-2 pb-6 pt-20">
+            },
+          }}
+        />
         <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 1024: 2 }}>
           <Masonry gutter="1.5rem">
             <Collapsible

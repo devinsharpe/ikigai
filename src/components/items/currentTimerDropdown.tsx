@@ -5,7 +5,7 @@ import { useOrganizationList } from "@clerk/nextjs";
 import { useMemo } from "react";
 import type { SimpleTimer } from "../forms";
 
-interface CurrentTimerDropdownProps {
+export interface CurrentTimerDropdownProps {
   onEdit: (
     timer: SimpleTimer & {
       id: string;
