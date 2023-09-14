@@ -60,44 +60,17 @@ function SelectDemo({
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Content className="z-[15] ml-8 flex min-w-[8rem] flex-col gap-1 rounded-lg border bg-white p-2 shadow-lg animate-in fade-in md:min-w-[12rem]">
+        <Select.Content
+          className={cn(
+            "z-[15] ml-8 flex min-w-[8rem] flex-col gap-1 rounded-lg border bg-white p-2 shadow-lg duration-1000 ease-in-out md:min-w-[12rem]",
+            "data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:zoom-in-90",
+            "data-[state=closed]=zoom-out-90 data-[state=closed]:animate-out data-[state=closed]:fade-out"
+          )}
+        >
           <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-white text-zinc-600">
             <ChevronUpIcon />
           </Select.ScrollUpButton>
-          <Select.Viewport className="p-1">
-            {children}
-            {/* <Select.Group>
-              <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
-            </Select.Group>
-
-            <SelectSeparator />
-
-            <Select.Group>
-              <SelectLabel>Vegetables</SelectLabel>
-              <SelectItem value="aubergine">Aubergine</SelectItem>
-              <SelectItem value="broccoli">Broccoli</SelectItem>
-              <SelectItem value="carrot" disabled>
-                Carrot
-              </SelectItem>
-              <SelectItem value="courgette">Courgette</SelectItem>
-              <SelectItem value="leek">Leek</SelectItem>
-            </Select.Group>
-
-            <SelectSeparator />
-
-            <Select.Group>
-              <SelectLabel>Meat</SelectLabel>
-              <SelectItem value="beef">Beef</SelectItem>
-              <SelectItem value="chicken">Chicken</SelectItem>
-              <SelectItem value="lamb">Lamb</SelectItem>
-              <SelectItem value="pork">Pork</SelectItem>
-            </Select.Group> */}
-          </Select.Viewport>
+          <Select.Viewport className="p-1">{children}</Select.Viewport>
           <Select.ScrollDownButton className="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white">
             <ChevronDownIcon />
           </Select.ScrollDownButton>

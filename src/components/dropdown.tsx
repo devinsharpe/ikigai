@@ -49,6 +49,8 @@ function Dropdown({ children, className, trigger }: DropdownProps) {
         <RadixDropdown.Content
           className={cn(
             "mr-4 flex min-w-[14rem] flex-col gap-1 rounded-lg border bg-white p-2 shadow-lg animate-in fade-in md:min-w-[16rem]",
+            "data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:zoom-in-90",
+            "data-[state=closed]=zoom-out-90 data-[state=closed]:animate-out data-[state=closed]:fade-out",
             className
           )}
         >
