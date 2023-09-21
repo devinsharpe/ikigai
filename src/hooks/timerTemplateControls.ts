@@ -9,7 +9,7 @@ const initialTimerTemplateData = {
   organization: "",
 };
 
-export function useTimerTemplateControls(org: string) {
+export function useTimerTemplateControls(org: string, projectId?: string) {
   const [isTimerTemplateModalOpen, setIsTimerTemplateModalOpen] =
     useState(false);
   const [timerTemplateDetails, setTimerTemplateDetails] = useState<
@@ -18,8 +18,13 @@ export function useTimerTemplateControls(org: string) {
   const createTimerTemplate = api.timerTemplates.create.useMutation();
   const deleteTimerTemplate = api.timerTemplates.delete.useMutation();
   const updateTimerTemplate = api.timerTemplates.update.useMutation();
-  const timerTemplates = api.timerTemplates.list.useQuery();
-
+  const timerTemplates = api.timerTemplates.list.useQuery(
+    projectId
+      ? {
+          projectId,
+        }
+      : undefined
+  );
   useEffect(() => {
     if (!isTimerTemplateModalOpen)
       setTimerTemplateDetails({

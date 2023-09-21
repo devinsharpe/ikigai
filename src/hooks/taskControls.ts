@@ -14,7 +14,7 @@ const initialTaskData = {
   assignedTo: "",
 };
 
-function splitTasksIntoPriorityGroups(
+export function splitTasksIntoPriorityGroups(
   tasks: (Task & {
     project: {
       id: string;
@@ -38,7 +38,11 @@ function splitTasksIntoPriorityGroups(
   return groups;
 }
 
-export function useTaskControls(org: string, userId: string) {
+export function useTaskControls(
+  org: string,
+  userId: string,
+  projectId?: string
+) {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskDetails, setTaskDetails] = useState<SimpleTask & { id?: string }>({
     ...initialTaskData,
@@ -47,12 +51,15 @@ export function useTaskControls(org: string, userId: string) {
   });
   const tasksCompleted = api.tasks.listCompleted.useQuery({
     timezoneOffset: new Date().getTimezoneOffset(),
+    projectId,
   });
   const tasksToday = api.tasks.listToday.useQuery({
     timezoneOffset: new Date().getTimezoneOffset(),
+    projectId,
   });
   const tasksUpcoming = api.tasks.listUpcoming.useQuery({
     timezoneOffset: new Date().getTimezoneOffset(),
+    projectId,
   });
   const createTask = api.tasks.create.useMutation();
   const deleteTask = api.tasks.delete.useMutation();

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { SimpleProject } from "~/components/forms";
 import { api } from "~/utils/api";
 
@@ -9,12 +9,22 @@ export function useProjectControls(
     list: boolean;
   }
 ) {
-  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
-  const [newProjectDetails, setNewProjectDetails] = useState<SimpleProject>({
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [projectDetails, setProjectDetails] = useState<
+    SimpleProject & { id?: string }
+  >({
     name: "",
     description: "",
     organization: org ?? "",
   });
+  const completedGraph = api.projects.listCompletionGraph.useQuery(
+    {
+      projectId: config.id ?? "",
+    },
+    {
+      enabled: !!config.id,
+    }
+  );
   const currentProject = api.projects.get.useQuery(
     {
       id: config.id ?? "",
@@ -28,15 +38,50 @@ export function useProjectControls(
   });
   const createProject = api.projects.create.useMutation();
   const deleteProject = api.projects.delete.useMutation();
+  const updateProject = api.projects.update.useMutation();
+
+  const handleProjectSubmit = useCallback(
+    async (project: SimpleProject & { id?: string }) => {
+      if (project.name) {
+        if (project.id)
+          await updateProject.mutateAsync({
+            ...project,
+            id: project.id,
+          });
+        else await createProject.mutateAsync(project);
+        void projects.refetch();
+        void currentProject.refetch();
+        setIsProjectModalOpen(false);
+        setProjectDetails({
+          name: "",
+          description: "",
+          organization: org,
+        });
+      } else console.log("missing name");
+    },
+    [createProject, org, projects, updateProject, currentProject]
+  );
+
+  const handleDeleteProject = useCallback(
+    async (id: string) => {
+      await deleteProject.mutateAsync({ id });
+      void projects.refetch();
+    },
+    [deleteProject, projects]
+  );
 
   return {
-    isNewProjectOpen,
-    setIsNewProjectOpen,
-    newProjectDetails,
-    setNewProjectDetails,
+    isProjectModalOpen,
+    setIsProjectModalOpen,
+    projectDetails,
+    setProjectDetails,
+    completedGraph,
     currentProject,
     projects,
     createProject,
     deleteProject,
+    updateProject,
+    handleDeleteProject,
+    handleProjectSubmit,
   };
 }

@@ -12,13 +12,47 @@ const initialTimerData = {
   stoppedAt: "",
 };
 
-export function useTimerControls(org: string) {
+export function splitTimersIntoDayGroups(
+  timers: (SimpleTimer & {
+    id: string;
+    project: {
+      id: string;
+      name: string;
+    };
+  })[]
+) {
+  const groups: Record<
+    string,
+    (SimpleTimer & {
+      id: string;
+      project: {
+        id: string;
+        name: string;
+      };
+    })[]
+  > = {};
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  timers.forEach((timer) => {
+    let date = new Date(timer.startedAt).toLocaleDateString();
+    if (date === today.toLocaleDateString()) date = "Today";
+    if (date === yesterday.toLocaleDateString()) date = "Yesterday";
+    if (groups[date]) groups[date]!.push(timer);
+    else groups[date] = [timer];
+  });
+  return groups;
+}
+
+export function useTimerControls(org: string, projectId?: string) {
   const utils = api.useContext();
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [timerDetails, setTimerDetails] = useState<
     SimpleTimer & { id?: string }
   >({ ...initialTimerData, organization: org });
-  const timers = api.timers.list.useQuery();
+  const timers = api.timers.list.useQuery(
+    projectId ? { projectId } : undefined
+  );
   const mutationProps = {
     onSuccess: () => utils.timers.current.invalidate(),
   };
@@ -88,29 +122,8 @@ export function useTimerControls(org: string) {
   );
 
   const timerDayGroups = useMemo(() => {
-    const groups: Record<
-      string,
-      (SimpleTimer & {
-        id: string;
-        project: {
-          id: string;
-          name: string;
-        };
-      })[]
-    > = {};
-    if (timers.data) {
-      const today = new Date();
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      timers.data.forEach((timer) => {
-        let date = new Date(timer.startedAt).toLocaleDateString();
-        if (date === today.toLocaleDateString()) date = "Today";
-        if (date === yesterday.toLocaleDateString()) date = "Yesterday";
-        if (groups[date]) groups[date]!.push(timer);
-        else groups[date] = [timer];
-      });
-    }
-    return groups;
+    if (timers.data) return splitTimersIntoDayGroups(timers.data);
+    return {};
   }, [timers]);
 
   const timerProjectGroupCount = useMemo(() => {
