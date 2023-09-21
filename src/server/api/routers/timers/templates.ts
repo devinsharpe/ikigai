@@ -47,26 +47,35 @@ export const timerTemplatesRouter = createTRPCRouter({
         .where(eq(timerTemplates.id, timerTemplate.id));
       return timerTemplate;
     }),
-  list: protectedProcedure.query(async ({ ctx }) => {
-    const templateList = await ctx.db.query.timerTemplates.findMany({
-      where: and(
-        eq(timerTemplates.createdBy, ctx.auth.userId),
-        ...(ctx.auth.orgId
-          ? [eq(timerTemplates.organization, ctx.auth.orgId)]
-          : [isNull(timerTemplates.organization)])
-      ),
-      orderBy: [asc(timerTemplates.name)],
-      with: {
-        project: {
-          columns: {
-            id: true,
-            name: true,
+  list: protectedProcedure
+    .input(
+      z
+        .object({
+          projectId: z.string(),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const templateList = await ctx.db.query.timerTemplates.findMany({
+        where: and(
+          eq(timerTemplates.createdBy, ctx.auth.userId),
+          ...(ctx.auth.orgId
+            ? [eq(timerTemplates.organization, ctx.auth.orgId)]
+            : [isNull(timerTemplates.organization)]),
+          ...(input ? [eq(timerTemplates.projectId, input.projectId)] : [])
+        ),
+        orderBy: [asc(timerTemplates.name)],
+        with: {
+          project: {
+            columns: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-    });
-    return templateList;
-  }),
+      });
+      return templateList;
+    }),
   update: protectedProcedure
     .input(
       z.object({

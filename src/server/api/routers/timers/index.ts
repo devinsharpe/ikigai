@@ -6,6 +6,8 @@ import { and, eq, desc, isNull, ne } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { projectAccessGuard } from "../../utils";
 
+// list-commitment-graph
+
 export const timersRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
@@ -80,26 +82,35 @@ export const timersRouter = createTRPCRouter({
       await ctx.db.delete(timers).where(eq(timers.id, timer.id));
       return timer;
     }),
-  list: protectedProcedure.query(async ({ ctx }) => {
-    const timerList = await ctx.db.query.timers.findMany({
-      where: and(
-        eq(timers.createdBy, ctx.auth.userId),
-        ...(ctx.auth.orgId
-          ? [eq(projects.organization, ctx.auth.orgId)]
-          : [isNull(projects.organization)])
-      ),
-      orderBy: [desc(timers.startedAt)],
-      with: {
-        project: {
-          columns: {
-            id: true,
-            name: true,
+  list: protectedProcedure
+    .input(
+      z
+        .object({
+          projectId: z.string(),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const timerList = await ctx.db.query.timers.findMany({
+        where: and(
+          eq(timers.createdBy, ctx.auth.userId),
+          ...(ctx.auth.orgId
+            ? [eq(timers.organization, ctx.auth.orgId)]
+            : [isNull(timers.organization)]),
+          ...(input ? [eq(timers.projectId, input.projectId)] : [])
+        ),
+        orderBy: [desc(timers.startedAt)],
+        with: {
+          project: {
+            columns: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-    });
-    return timerList;
-  }),
+      });
+      return timerList;
+    }),
   stop: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {

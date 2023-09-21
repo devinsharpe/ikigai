@@ -85,6 +85,7 @@ export const tasksRouter = createTRPCRouter({
     .input(
       z.object({
         timezoneOffset: z.number(),
+        projectId: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -96,7 +97,8 @@ export const tasksRouter = createTRPCRouter({
           gte(tasks.completedAt, filterDate.toISOString()),
           ...(ctx.auth.orgId
             ? [eq(tasks.organization, ctx.auth.orgId)]
-            : [isNull(tasks.organization)])
+            : [isNull(tasks.organization)]),
+          ...(input.projectId ? [eq(tasks.projectId, input.projectId)] : [])
         ),
         orderBy: desc(tasks.completedAt),
         with: {
@@ -115,6 +117,7 @@ export const tasksRouter = createTRPCRouter({
     .input(
       z.object({
         timezoneOffset: z.number(),
+        projectId: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -126,7 +129,8 @@ export const tasksRouter = createTRPCRouter({
           lt(tasks.dueDate, filterDate.toISOString()),
           ...(ctx.auth.orgId
             ? [eq(tasks.organization, ctx.auth.orgId)]
-            : [isNull(tasks.organization)])
+            : [isNull(tasks.organization)]),
+          ...(input.projectId ? [eq(tasks.projectId, input.projectId)] : [])
         ),
         orderBy: [asc(tasks.dueDate), asc(tasks.name)],
         with: {
@@ -144,6 +148,7 @@ export const tasksRouter = createTRPCRouter({
     .input(
       z.object({
         timezoneOffset: z.number(),
+        projectId: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -155,7 +160,8 @@ export const tasksRouter = createTRPCRouter({
           gte(tasks.dueDate, filterDate.toISOString()),
           ...(ctx.auth.orgId
             ? [eq(tasks.organization, ctx.auth.orgId)]
-            : [isNull(tasks.organization)])
+            : [isNull(tasks.organization)]),
+          ...(input.projectId ? [eq(tasks.projectId, input.projectId)] : [])
         ),
         orderBy: [asc(tasks.dueDate), asc(tasks.name)],
         with: {
