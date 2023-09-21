@@ -4,12 +4,14 @@ import { api } from "~/utils/api";
 import { useOrganizationList } from "@clerk/nextjs";
 import { useMemo } from "react";
 import type { SimpleTimer } from "../forms";
+import { useRouter } from "next/router";
 
 export interface CurrentTimerDropdownProps {
   onEdit: (
     timer: SimpleTimer & {
       id: string;
       project: {
+        id: string;
         name: string;
       };
     }
@@ -39,6 +41,8 @@ function CurrentTimerDropdown({
     }
     return null;
   }, [currentTimer, organizationList]);
+
+  const router = useRouter();
 
   if (currentTimer.data)
     return (
@@ -86,7 +90,14 @@ function CurrentTimerDropdown({
             </>
           </DropdownItem>
           <DropdownSeparator />
-          <DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              if (currentTimer.data)
+                void router.push(
+                  `/app/projects/${currentTimer.data.project.id}`
+                );
+            }}
+          >
             <>
               <List className="w-5" />
               <span>View Project</span>
