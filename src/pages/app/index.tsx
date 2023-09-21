@@ -29,6 +29,7 @@ import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
 import Alert from "../../components/alert";
 import { useProjectControls } from "~/hooks/projectControls";
+import ProjectCollapsibleItem from "~/components/items/projectCollapsible";
 
 function AppHomePage() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
@@ -52,12 +53,15 @@ function AppHomePage() {
   } = useDeleteControls();
 
   const {
-    isNewProjectOpen,
-    setIsNewProjectOpen,
-    newProjectDetails,
-    setNewProjectDetails,
+    isProjectModalOpen,
+    setIsProjectModalOpen,
+    projectDetails,
+    setProjectDetails,
     projects,
     createProject,
+    updateProject,
+    handleDeleteProject,
+    handleProjectSubmit,
   } = useProjectControls(
     currentOrganization.organization ? currentOrganization.organization.id : "",
     {
@@ -118,34 +122,6 @@ function AppHomePage() {
     currentOrganization.organization ? currentOrganization.organization.id : ""
   );
 
-  const handleNewProject = useCallback(
-    async (project: SimpleProject) => {
-      if (project.name) {
-        if (setActive) await setActive({ organization: project.organization });
-        await createProject.mutateAsync({
-          name: project.name,
-          description: project.description ?? "",
-        });
-        void projects.refetch();
-        setIsNewProjectOpen(false);
-        setNewProjectDetails({
-          name: "",
-          description: "",
-          organization: "",
-        });
-      } else {
-        console.log("missing name");
-      }
-    },
-    [
-      projects,
-      setActive,
-      createProject,
-      setIsNewProjectOpen,
-      setNewProjectDetails,
-    ]
-  );
-
   useEffect(() => {
     void projects.refetch();
     void tasksCompleted.refetch();
@@ -156,7 +132,7 @@ function AppHomePage() {
     const organization = currentOrganization.organization
       ? currentOrganization.organization.id
       : "";
-    setNewProjectDetails((p) => ({
+    setProjectDetails((p) => ({
       ...p,
       organization,
     }));
@@ -239,8 +215,8 @@ function AppHomePage() {
                           setTimerTemplateDetails(t);
                           setIsTimerTemplateModalOpen(true);
                         }}
-                        onTimerStart={async (timer) =>
-                          await handleTimerSubmit({
+                        onTimerStart={(timer) =>
+                          void handleTimerSubmit({
                             ...timer,
                             startedAt: new Date().toISOString(),
                             stoppedAt: null,
@@ -439,7 +415,7 @@ function AppHomePage() {
                 <CollapsibleActionButton
                   key="project-new"
                   title="New Project"
-                  onClick={() => setIsNewProjectOpen(true)}
+                  onClick={() => setIsProjectModalOpen(true)}
                 >
                   <>
                     <Plus />
@@ -453,17 +429,25 @@ function AppHomePage() {
               elements={
                 projects.data
                   ? projects.data.map((project) => (
-                      <CollapsibleItem key={project.id}>
-                        <div>
-                          <h5 className="font-semibold">{project.name}</h5>
-                          <h6 className="text-sm leading-none text-zinc-600">
-                            {taskCompletedProjectGroupCount[project.id] ?? 0}
-                            &nbsp;Tasks /{" "}
-                            {timerProjectGroupCount[project.id] ?? 0} Recent
-                            Timers
-                          </h6>
-                        </div>
-                      </CollapsibleItem>
+                      <ProjectCollapsibleItem
+                        key={project.id}
+                        onDelete={(id) => {
+                          setDataId(id);
+                          setDataType("project");
+                          setIsDeleteAlertOpen(true);
+                        }}
+                        onEdit={(p) => {
+                          setProjectDetails(p);
+                          setIsProjectModalOpen(true);
+                        }}
+                        project={project}
+                        completedTaskCount={
+                          taskCompletedProjectGroupCount[project.id] ?? 0
+                        }
+                        recentTimerCount={
+                          timerProjectGroupCount[project.id] ?? 0
+                        }
+                      />
                     ))
                   : []
               }
@@ -474,21 +458,25 @@ function AppHomePage() {
         {/* </div> */}
       </main>
       <Modal
-        isOpen={createProject.isLoading || isNewProjectOpen}
-        onOpenChange={() => setIsNewProjectOpen(!isNewProjectOpen)}
-        title="New Project"
+        isOpen={
+          createProject.isLoading ||
+          updateProject.isLoading ||
+          isProjectModalOpen
+        }
+        onOpenChange={() => setIsProjectModalOpen(!isProjectModalOpen)}
+        title={projectDetails.id ? "Edit Project" : "New Project"}
         description="Building a rocketship? Starting a new business? Renovating a home? Keeping up with your meds?"
       >
         <ProjectForm
-          isLoading={createProject.isLoading}
+          isLoading={createProject.isLoading || updateProject.isLoading}
           organizations={
             organizationList
               ? organizationList.map((org) => org.organization)
               : []
           }
-          project={newProjectDetails}
-          onChange={setNewProjectDetails}
-          onSubmit={handleNewProject}
+          project={projectDetails}
+          onChange={setProjectDetails}
+          onSubmit={handleProjectSubmit}
         />
       </Modal>
       <Modal
@@ -589,6 +577,7 @@ function AppHomePage() {
             if (dataType === "timer") void handleDeleteTimer(dataId);
             if (dataType === "timerTemplate")
               void handleDeleteTimerTemplate(dataId);
+            if (dataType === "project") void handleDeleteProject(dataId);
           }
 
           resetDeleteControls();

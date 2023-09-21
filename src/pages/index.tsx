@@ -107,7 +107,7 @@ export default function Home() {
               Living Life a Little Differently
             </h3>
           </div>
-          <p className="mx-auto w-full max-w-2xl">
+          <p className="mx-auto w-full max-w-2xl text-lg">
             Discovering one&apos;s ikigai, or purpose in life, is a journey that
             requires self-reflection and introspection. It&apos;s about finding
             the perfect balance between work, personal relationships, and
@@ -115,7 +115,7 @@ export default function Home() {
             life gets busy and overwhelming? How do you maintain that delicate
             balance without feeling stressed or overwhelmed?
           </p>
-          <p className="mx-auto w-full max-w-2xl">
+          <p className="mx-auto w-full max-w-2xl text-lg">
             That&apos;s where Ikigai comes in - a progressive web application
             (PWA) designed to help you manage your life in a peaceful way.
             Conceived after the creator reevaluated their own life and tried to
@@ -125,15 +125,21 @@ export default function Home() {
           </p>
         </section>
 
-        <footer className="flex items-center justify-center">
+        <footer className="flex flex-col items-center justify-center gap-4">
           <a
             href="https://www.devsharpe.io"
             target="_blank"
             rel="noreferrer"
-            className="rounded-full bg-zinc-100 px-8 py-4 text-zinc-700"
+            className="rounded-full bg-zinc-100 px-8 py-2 text-zinc-700"
           >
             Made with ❤️ by Devin Sharpe
           </a>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 text-zinc-600">
+            <p className="underline">Terms of Use</p>
+            <p className="underline">Privacy Policy</p>
+            <p className="underline">Open Source Info</p>
+          </div>
         </footer>
       </main>
     </>
