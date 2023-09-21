@@ -14,7 +14,11 @@ export function useTimerTemplateControls(org: string, projectId?: string) {
     useState(false);
   const [timerTemplateDetails, setTimerTemplateDetails] = useState<
     SimpleTimerTemplate & { id?: string }
-  >(initialTimerTemplateData);
+  >({
+    ...initialTimerTemplateData,
+    organization: org,
+    projectId: projectId ?? "",
+  });
   const createTimerTemplate = api.timerTemplates.create.useMutation();
   const deleteTimerTemplate = api.timerTemplates.delete.useMutation();
   const updateTimerTemplate = api.timerTemplates.update.useMutation();

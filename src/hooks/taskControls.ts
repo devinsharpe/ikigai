@@ -48,6 +48,7 @@ export function useTaskControls(
     ...initialTaskData,
     organization: org,
     assignedTo: userId,
+    projectId: projectId ?? "",
   });
   const tasksCompleted = api.tasks.listCompleted.useQuery({
     timezoneOffset: new Date().getTimezoneOffset(),

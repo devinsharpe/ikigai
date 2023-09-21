@@ -49,7 +49,7 @@ export function useTimerControls(org: string, projectId?: string) {
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [timerDetails, setTimerDetails] = useState<
     SimpleTimer & { id?: string }
-  >({ ...initialTimerData, organization: org });
+  >({ ...initialTimerData, organization: org, projectId: projectId ?? "" });
   const timers = api.timers.list.useQuery(
     projectId ? { projectId } : undefined
   );
