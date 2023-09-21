@@ -1,26 +1,3 @@
-// Components
-// Task Compeletion Graph - Github commit graph ✅
-// Today Tasks ✅
-// Upcoming Tasks ✅
-// Recently Completed Tasks ✅
-// Time Entries ✅
-// Time commitment graph (line graph)
-//
-// add completion graph functionality ✅
-// remove view project option from collapsible items ✅
-// add project edit functionality ✅
-// add all org timers query logic
-// add completion graph scope filter
-// add timer user filter
-// add user display to timer item
-// add view project logic to current timer dropdown
-// remove priority groups from useTaskControls
-//
-// Project schema additional columns
-// emoji
-// header image
-// theme color
-
 import { useOrganization, useOrganizationList, useUser } from "@clerk/nextjs";
 import type { OrganizationMembershipPublicUserData } from "@clerk/nextjs/dist/types/server";
 import { ChevronLeft, Cog, Smartphone } from "lucide-react";
@@ -221,7 +198,6 @@ function ProjectPage() {
   );
 
   useEffect(() => {
-    console.log("running & running");
     if (currentProject.data)
       setProjectDetails({
         id: currentProject.data.id,
