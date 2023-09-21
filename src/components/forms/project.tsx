@@ -3,7 +3,7 @@ import type { SimpleOrganization, SimpleProject } from ".";
 
 interface ProjectFormProps {
   isLoading: boolean;
-  project: SimpleProject;
+  project: SimpleProject & { id?: string };
   organizations: SimpleOrganization[];
   onChange: (data: SimpleProject) => void;
   onSubmit: (data: SimpleProject) => Promise<void>;
@@ -80,7 +80,7 @@ function ProjectForm({
         ) : (
           <ListPlus />
         )}
-        <span>Create Project</span>
+        <span>{project.id ? "Edit" : "Create"} Project</span>
       </button>
     </form>
   );

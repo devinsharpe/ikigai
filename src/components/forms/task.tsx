@@ -231,26 +231,28 @@ function TaskForm({
           ))}
         </select>
       </fieldset>
-      <fieldset className="relative flex items-center">
-        <Building className="absolute left-3 text-zinc-500" />
-        <select
-          title="Task Organization"
-          className="w-full rounded-lg border border-zinc-300 p-3 pl-10 text-zinc-800"
-          value={task.organization ?? ""}
-          onChange={(e) => void onOrgChange(e.target.value)}
-        >
-          <option value="">Personal Workspace</option>
-          {organizations ? (
-            organizations.map((org) => (
-              <option value={org.id} key={org.id}>
-                {org.name}
-              </option>
-            ))
-          ) : (
-            <></>
-          )}
-        </select>
-      </fieldset>
+      {!task.id && (
+        <fieldset className="relative flex items-center">
+          <Building className="absolute left-3 text-zinc-500" />
+          <select
+            title="Task Organization"
+            className="w-full rounded-lg border border-zinc-300 p-3 pl-10 text-zinc-800"
+            value={task.organization ?? ""}
+            onChange={(e) => void onOrgChange(e.target.value)}
+          >
+            <option value="">Personal Workspace</option>
+            {organizations ? (
+              organizations.map((org) => (
+                <option value={org.id} key={org.id}>
+                  {org.name}
+                </option>
+              ))
+            ) : (
+              <></>
+            )}
+          </select>
+        </fieldset>
+      )}
       <button
         disabled={isLoading}
         type="submit"
