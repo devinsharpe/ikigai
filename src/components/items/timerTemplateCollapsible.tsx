@@ -1,20 +1,11 @@
-import {
-  List,
-  Loader2,
-  // Copy,
-  // Disc3,
-  // MoreHorizontal,
-  PlayCircle,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { List, Loader2, Pencil, PlayCircle, Trash2 } from "lucide-react";
 import { CollapsibleItem } from "../collapsible";
-// import { cn } from "~/lib/cn";
-import type { SimpleTimerTemplate } from "../forms";
 import ContextMenu, {
   ContextMenuItem,
-  ContextMenuSeparater,
+  ContextMenuSeparator,
 } from "../contextMenu";
+import type { SimpleTimerTemplate } from "../forms";
+import { useRouter } from "next/router";
 
 interface TimerTemplateCollapsibleItemProps {
   onDelete: (id: string) => void;
@@ -31,10 +22,11 @@ interface TimerTemplateCollapsibleItemProps {
     name: string;
     description: string;
     projectId: string;
-  }) => Promise<void>;
+  }) => void;
   timerTemplate: SimpleTimerTemplate & {
     id: string;
     project: {
+      id: string;
       name: string;
     };
   };
@@ -47,6 +39,8 @@ function TimerTemplateCollapsibleItem({
   onTimerStart,
   timerTemplate,
 }: TimerTemplateCollapsibleItemProps) {
+  const router = useRouter();
+
   return (
     <ContextMenu
       trigger={
@@ -96,13 +90,19 @@ function TimerTemplateCollapsibleItem({
             <span>Start Timer</span>
           </>
         </ContextMenuItem>
-        <ContextMenuItem>
+        <ContextMenuItem
+          disabled={router.asPath.includes("/projects/")}
+          onClick={() =>
+            !router.asPath.includes("/projects/") &&
+            router.push(`/app/projects/${timerTemplate.project.id}`)
+          }
+        >
           <>
             <List className="absolute left-5 w-4" />
             <span>View Project</span>
           </>
         </ContextMenuItem>
-        <ContextMenuSeparater />
+        <ContextMenuSeparator />
         <ContextMenuItem onClick={() => onEdit(timerTemplate)}>
           <>
             <Pencil className="absolute left-5 w-4" />

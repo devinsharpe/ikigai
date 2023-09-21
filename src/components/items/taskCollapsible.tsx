@@ -12,10 +12,11 @@ import type { Task } from "~/server/db/schema/app";
 import { CollapsibleItem } from "../collapsible";
 import ContextMenu, {
   ContextMenuItem,
-  ContextMenuSeparater,
+  ContextMenuSeparator,
 } from "../contextMenu";
 import type { SimpleTask } from "../forms";
 import Loader from "../loader";
+import { useRouter } from "next/router";
 
 export interface TaskCollapsibleProps {
   isLoading: boolean;
@@ -29,7 +30,7 @@ export interface TaskCollapsibleProps {
     };
   };
   onEdit: (
-    timer: SimpleTask & {
+    task: SimpleTask & {
       id: string;
       project: {
         name: string;
@@ -73,6 +74,8 @@ function TaskCollapsible({
     }
     return false;
   }, [task.dueDate, task.completedAt]);
+
+  const router = useRouter();
 
   return (
     <ContextMenu
@@ -123,13 +126,19 @@ function TaskCollapsible({
             </>
           </ContextMenuItem>
         )}
-        <ContextMenuItem>
+        <ContextMenuItem
+          disabled={router.asPath.includes("/projects/")}
+          onClick={() =>
+            !router.asPath.includes("/projects/") &&
+            router.push(`/app/projects/${task.project.id}`)
+          }
+        >
           <>
             <List className="absolute left-5 w-4" />
             <span>View Project</span>
           </>
         </ContextMenuItem>
-        <ContextMenuSeparater />
+        <ContextMenuSeparator />
         <ContextMenuItem
           onClick={() =>
             onEdit({

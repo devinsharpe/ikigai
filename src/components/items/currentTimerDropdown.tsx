@@ -47,7 +47,7 @@ function CurrentTimerDropdown({
         trigger={
           <button
             type="button"
-            className="flex w-16 shrink-0 items-center justify-center rounded-lg border border-zinc-300 hover:bg-zinc-100"
+            className="flex w-16 shrink-0 items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-100"
           >
             <Disc3 className="shrink-0 animate-spin text-zinc-600" />
           </button>
@@ -109,7 +109,7 @@ function CurrentTimerDropdown({
     return (
       <button
         type="button"
-        className="flex w-16 shrink-0 items-center justify-center rounded-lg border border-zinc-300 hover:bg-zinc-100"
+        className="flex w-16 shrink-0 items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-100"
         onClick={onStart}
       >
         <PlayCircle className="text-zinc-600" />

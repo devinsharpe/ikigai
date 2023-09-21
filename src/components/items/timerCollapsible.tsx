@@ -14,8 +14,9 @@ import { cn } from "~/lib/cn";
 import type { SimpleTimer } from "../forms";
 import ContextMenu, {
   ContextMenuItem,
-  ContextMenuSeparater,
+  ContextMenuSeparator,
 } from "../contextMenu";
+import { useRouter } from "next/router";
 
 export interface TimerCollapsibleItemProps {
   onDelete: (id: string) => void;
@@ -36,6 +37,7 @@ export interface TimerCollapsibleItemProps {
   timer: SimpleTimer & {
     id: string;
     project: {
+      id: string;
       name: string;
     };
   };
@@ -81,6 +83,8 @@ function TimerCollapsibleItem({
     timer.stoppedAt ? null : 1000
   );
 
+  const router = useRouter();
+
   return (
     <ContextMenu
       trigger={
@@ -124,13 +128,19 @@ function TimerCollapsibleItem({
             </>
           </ContextMenuItem>
         )}
-        <ContextMenuItem>
+        <ContextMenuItem
+          disabled={router.asPath.includes("/app/projects/")}
+          onClick={() =>
+            !router.asPath.includes("/app/projects/") &&
+            router.push(`/app/projects/${timer.project.id}`)
+          }
+        >
           <>
             <List className="absolute left-5 w-4" />
             <span>View Project</span>
           </>
         </ContextMenuItem>
-        <ContextMenuSeparater />
+        <ContextMenuSeparator />
         <ContextMenuItem onClick={() => void onEdit(timer)}>
           <>
             <Pencil className="absolute left-5 w-4" />
