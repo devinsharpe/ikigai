@@ -57,6 +57,7 @@ export function LoadingCollapsibleItem(props: Record<string, unknown>) {
 interface CollapsibleItemProps {
   children: JSX.Element;
   className?: string;
+  [key: string]: unknown;
 }
 
 export function CollapsibleItem({ children, ...props }: CollapsibleItemProps) {

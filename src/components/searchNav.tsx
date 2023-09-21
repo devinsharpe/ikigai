@@ -24,7 +24,7 @@ function SearchNav({ currentTimerControls }: SearchNavProps) {
         </div>
         <button
           type="button"
-          className="flex w-16 items-center justify-center rounded-lg border border-zinc-300 hover:bg-zinc-100"
+          className="flex w-16 shrink-0 items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-100"
           onClick={console.log}
         >
           <LayoutDashboard />

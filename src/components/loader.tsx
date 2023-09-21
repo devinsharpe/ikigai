@@ -3,11 +3,11 @@ import { cn } from "~/lib/cn";
 
 interface LoaderProps {
   className?: string;
-  children: JSX.Element;
+  children?: JSX.Element | null;
   isLoading: boolean;
 }
 
-function Loader({ className, children, isLoading }: LoaderProps) {
+function Loader({ className, children = null, isLoading }: LoaderProps) {
   if (isLoading) return <Loader2 className={cn("animate-spin", className)} />;
   return children;
 }

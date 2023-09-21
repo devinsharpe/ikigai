@@ -50,7 +50,7 @@ export function ContextMenuItem({
   return (
     <RadixContextMenu.Item
       className={cn(
-        "flex w-full cursor-pointer items-center gap-2 rounded-md p-2 pl-10 text-sm font-medium hover:bg-zinc-100 focus:outline-none md:text-base",
+        "flex w-full cursor-pointer items-center gap-2 rounded-md p-2 pl-10 text-sm font-medium hover:bg-zinc-100 focus:outline-none data-[disabled]:cursor-not-allowed data-[disabled]:text-zinc-400 md:text-base",
         className
       )}
       {...props}
@@ -117,7 +117,7 @@ export function ContextMenuRadioGroup({
   );
 }
 
-export function ContextMenuSeparater({ className }: { className?: string }) {
+export function ContextMenuSeparator({ className }: { className?: string }) {
   return (
     <RadixContextMenu.Separator
       className={cn("m-1 h-[1px] bg-zinc-300", className)}

@@ -53,9 +53,11 @@ function Modal({
               </Dialog.Description>
             )}
             {children}
-            <Dialog.Close className="flex items-center justify-center gap-2 rounded-md p-2 text-sm font-semibold text-zinc-600 hover:bg-zinc-100">
-              <span>Close</span>
-            </Dialog.Close>
+            <div className="flex w-full justify-center">
+              <Dialog.Close className="flex items-center justify-center gap-2 rounded-md px-6 py-2 text-sm font-semibold text-zinc-600 hover:bg-zinc-100">
+                <span>Close</span>
+              </Dialog.Close>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
