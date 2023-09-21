@@ -34,9 +34,11 @@ export function useTimerTemplateControls(org: string, projectId?: string) {
       setTimerTemplateDetails({
         ...initialTimerTemplateData,
         organization: org,
+        projectId: projectId ?? "",
       });
     else setTimerTemplateDetails((t) => ({ ...t, organization: org }));
-  }, [isTimerTemplateModalOpen, setTimerTemplateDetails, org]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTimerTemplateModalOpen, projectId, org]);
 
   const handleTimerTemplateSubmit = useCallback(
     async (timerTemplate: SimpleTimerTemplate & { id?: string }) => {

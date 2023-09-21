@@ -1,14 +1,12 @@
 import { useOrganization, useOrganizationList, useUser } from "@clerk/nextjs";
 import type { OrganizationMembershipPublicUserData } from "@clerk/nextjs/dist/types/server";
 import { Plus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import Collapsible, {
   CollapsibleActionButton,
-  CollapsibleItem,
   EmptyCollapsibleItem,
 } from "~/components/collapsible";
-import type { SimpleProject } from "~/components/forms";
 import ProjectForm from "~/components/forms/project";
 import TaskForm from "~/components/forms/task";
 import TimerForm from "~/components/forms/timer";

@@ -72,9 +72,10 @@ export function useTaskControls(
         ...initialTaskData,
         organization: org,
         assignedTo: userId,
+        projectId: projectId ?? "",
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTaskModalOpen]);
+  }, [isTaskModalOpen, org, projectId]);
 
   const taskTodayPriorityGroups = useMemo(() => {
     if (tasksToday.data) return splitTasksIntoPriorityGroups(tasksToday.data);

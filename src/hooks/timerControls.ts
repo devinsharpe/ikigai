@@ -63,9 +63,13 @@ export function useTimerControls(org: string, projectId?: string) {
 
   useEffect(() => {
     if (!isTimerModalOpen)
-      setTimerDetails({ ...initialTimerData, organization: org });
+      setTimerDetails({
+        ...initialTimerData,
+        organization: org,
+        projectId: projectId ?? "",
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTimerModalOpen]);
+  }, [isTimerModalOpen, org, projectId]);
 
   const handleTimerSubmit = useCallback(
     async (timer: SimpleTimer & { id?: string }) => {
