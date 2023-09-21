@@ -7,6 +7,7 @@ interface TimerDayGroupCollapsibleItemProps {
   timers: (SimpleTimer & {
     id: string;
     project: {
+      id: string;
       name: string;
     };
   })[];
