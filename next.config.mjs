@@ -16,6 +16,11 @@ const config = {
       },
       {
         protocol: "https",
+        hostname: "images.clerk.dev",
+        port: "",
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
         port: "",
       },
