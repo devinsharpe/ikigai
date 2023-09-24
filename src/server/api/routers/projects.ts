@@ -5,6 +5,7 @@ import { projects, tasks } from "~/server/db/schema";
 import { createId } from "~/server/db/utils";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { projectAccessGuard } from "../utils";
+import { ProjectThemeValues } from "~/server/db/schema/enums";
 
 const resetDate = (date: Date) => {
   date.setHours(0);
@@ -19,6 +20,7 @@ export const projectsRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         description: z.string().nullable().optional(),
+        themeColor: z.enum(ProjectThemeValues).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -154,6 +156,7 @@ export const projectsRouter = createTRPCRouter({
         id: z.string(),
         name: z.string().optional(),
         description: z.string().nullable().optional(),
+        themeColor: z.enum(ProjectThemeValues).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
