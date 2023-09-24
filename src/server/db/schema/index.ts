@@ -15,4 +15,4 @@ export const timers = schema.timers;
 export const timerTemplates = schema.timerTemplates;
 
 // Enums
-export const projectVisibilityEnum = enumSchema.projectVisibilityEnum;
+export const projectThemeEnum = enumSchema.projectThemeEnum;

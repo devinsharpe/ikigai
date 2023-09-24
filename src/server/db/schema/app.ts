@@ -9,11 +9,15 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { idConfig } from "../utils";
+import { ProjectThemeOptions, projectThemeEnum } from "./enums";
 
 export const projects = pgTable("projects", {
   id: varchar("id", idConfig).primaryKey().notNull(),
   name: varchar("name").notNull(),
   description: varchar("description"),
+  themeColor: projectThemeEnum("themeColor")
+    .default(ProjectThemeOptions.Zinc)
+    .notNull(),
   createdAt: timestamp("createdAt", {
     withTimezone: true,
     mode: "string",
