@@ -1,6 +1,12 @@
 import { useOrganization, useOrganizationList, useUser } from "@clerk/nextjs";
 import type { OrganizationMembershipPublicUserData } from "@clerk/nextjs/dist/types/server";
-import { ChevronLeft, Cog, Smartphone } from "lucide-react";
+import {
+  ChevronLeft,
+  Cog,
+  Download,
+  ImageIcon,
+  Smartphone,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -203,6 +209,7 @@ function ProjectPage() {
         id: currentProject.data.id,
         name: currentProject.data.name,
         description: currentProject.data.description,
+        themeColor: currentProject.data.themeColor,
         organization: currentProject.data.organization,
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -287,9 +294,24 @@ function ProjectPage() {
               >
                 <ChevronLeft />
               </button>
-              <span className="absolute bottom-2 left-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white text-xl leading-none shadow md:text-2xl">
-                🌸
-              </span>
+              <div className="absolute bottom-2 right-2 flex items-center">
+                <span
+                  className="flex h-8 items-center justify-center gap-2 rounded-l-md bg-white/75 px-2 backdrop-blur-md transition-colors duration-150 hover:bg-white"
+                  onClick={() => router.back()}
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  <span className="truncate text-sm">
+                    Photo by Annie Spratt on Unsplash
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="flex h-8 w-8 items-center justify-center rounded-r-md bg-white/75 backdrop-blur-md transition-colors duration-150 hover:bg-white"
+                  onClick={() => router.back()}
+                >
+                  <Download className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </div>
           <section className="flex flex-col gap-4 px-2">
