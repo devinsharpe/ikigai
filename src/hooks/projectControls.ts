@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import type { SimpleProject } from "~/components/forms";
+import { ProjectThemeOptions } from "~/server/db/schema/enums";
 import { api } from "~/utils/api";
 
 export function useProjectControls(
@@ -16,6 +17,7 @@ export function useProjectControls(
     name: "",
     description: "",
     organization: org ?? "",
+    themeColor: ProjectThemeOptions.Zinc,
   });
   const completedGraph = api.projects.listCompletionGraph.useQuery(
     {
@@ -56,6 +58,7 @@ export function useProjectControls(
           name: "",
           description: "",
           organization: org,
+          themeColor: ProjectThemeOptions.Zinc,
         });
       } else console.log("missing name");
     },
