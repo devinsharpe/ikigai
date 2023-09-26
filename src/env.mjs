@@ -10,6 +10,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string(),
     DB_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "test", "production"]),
+    UNSPLASH_ACCESS_KEY: z.string(),
   },
 
   /**
@@ -33,6 +34,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     DB_URL: process.env.DB_URL,
+    UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY,
     // Client Settings
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
