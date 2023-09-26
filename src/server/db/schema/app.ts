@@ -18,6 +18,7 @@ export const projects = pgTable("projects", {
   themeColor: projectThemeEnum("themeColor")
     .default(ProjectThemeOptions.Zinc)
     .notNull(),
+  imageId: varchar("imageId").references((): AnyPgColumn => images.id),
   createdAt: timestamp("createdAt", {
     withTimezone: true,
     mode: "string",
@@ -26,7 +27,11 @@ export const projects = pgTable("projects", {
   organization: varchar("organization"),
   isActive: boolean("isActive").default(true),
 });
-export const projectRelations = relations(projects, ({ many }) => ({
+export const projectRelations = relations(projects, ({ one, many }) => ({
+  headerImage: one(images, {
+    fields: [projects.imageId],
+    references: [images.id],
+  }),
   tasks: many(tasks),
   timers: many(timers),
   timerTemplates: many(timerTemplates),
@@ -148,16 +153,33 @@ export const timerTemplateRelations = relations(
 export type TimerTemplate = InferModel<typeof timerTemplates, "select">;
 export type NewTimerTemplate = InferModel<typeof timerTemplates, "insert">;
 
+export const images = pgTable("images", {
+  id: varchar("id").primaryKey().notNull(),
+  username: varchar("username").notNull(),
+  userFullName: varchar("userFullName").notNull(),
+  userUrl: varchar("userUrl").notNull(),
+  description: varchar("description").notNull(),
+  downloadUrl: varchar("downloadUrl").notNull(),
+  htmlUrl: varchar("htmlUrl").notNull(),
+});
+export const imagesRelations = relations(images, ({ many }) => ({
+  projects: many(projects),
+}));
+export type Image = InferModel<typeof images, "select">;
+export type NewImage = InferModel<typeof images, "insert">;
+
 const schema = {
   projects,
   tasks,
   timers,
   timerTemplates,
+  images,
 };
 export const relationSchema = {
   taskRelations,
   timerRelations,
   timerTemplateRelations,
+  imagesRelations,
 };
 
 export default schema;
