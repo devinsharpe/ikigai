@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { ListPlus, Loader2 } from "lucide-react";
-import type { ProjectThemeOptions } from "~/server/db/schema/enums";
+import { ProjectThemeOptions } from "~/server/db/schema/enums";
 import type { SimpleOrganization, SimpleProject } from ".";
 import ColorSelect from "./inputs/colorSelect";
 import OrganizationSelect from "./inputs/organizationSelect";
@@ -236,65 +236,11 @@ function ProjectForm({
       />
       <ColorSelect
         label="Theme Color"
-        onChange={(val) => onChange({ ...project, themeColor: val })}
+        onChange={(val) =>
+          onChange({ ...project, themeColor: val ?? ProjectThemeOptions.Zinc })
+        }
         value={project.themeColor}
       />
-      {/* <Select
-        isLoading={false}
-        label="Theme Color"
-        onChange={(val) =>
-          onChange({ ...project, themeColor: val as ProjectThemeOptions })
-        }
-        value={project.themeColor}
-        placeholder="Select a theme color"
-        trigger={
-          <div className="flex w-full items-center gap-2">
-            <div
-              className={cn(
-                "rounded-full bg-opacity-50 p-1",
-                ProjectThemeColors[project.themeColor]!.light.className.bg
-              )}
-            >
-              <div
-                className={cn(
-                  "h-6 w-6 rounded-full bg-zinc-600",
-                  project.themeColor
-                    ? ProjectThemeColors[project.themeColor]!.light.className.bg
-                    : ""
-                )}
-              />
-            </div>
-            <div>
-              <p className="text-left">{project.themeColor}</p>
-            </div>
-          </div>
-        }
-      >
-        <>
-          {Object.keys(ProjectThemeColors).map((key) => (
-            <SelectItem key={key} value={key}>
-              <div className="flex w-full items-center gap-2">
-                <div
-                  className={cn(
-                    "rounded-full bg-opacity-50 p-1",
-                    ProjectThemeColors[key]!.light.className.bg
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "h-6 w-6 rounded-full",
-                      ProjectThemeColors[key]!.light.className.bg
-                    )}
-                  />
-                </div>
-                <div>
-                  <p>{key}</p>
-                </div>
-              </div>
-            </SelectItem>
-          ))}
-        </>
-      </Select> */}
       {user && (
         <OrganizationSelect
           organizations={organizations}
