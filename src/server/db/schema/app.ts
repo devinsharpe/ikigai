@@ -176,6 +176,7 @@ const schema = {
   images,
 };
 export const relationSchema = {
+  projectRelations,
   taskRelations,
   timerRelations,
   timerTemplateRelations,
