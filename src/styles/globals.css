@@ -10,12 +10,24 @@ input {
     @apply border-zinc-500;
 }
 
-@supports (-webkit-touch-callout: none) {
-  .h-screen {
-    height: -webkit-fill-available;
-  }
+.wheel {
+    background: conic-gradient(from 90deg,
+            violet,
+            indigo,
+            blue,
+            green,
+            yellow,
+            orange,
+            red,
+            violet);
+}
 
-  .min-h-screen {
-    min-height: -webkit-fill-available;
-  }
+@supports (-webkit-touch-callout: none) {
+    .h-screen {
+        height: -webkit-fill-available;
+    }
+
+    .min-h-screen {
+        min-height: -webkit-fill-available;
+    }
 }

@@ -46,7 +46,7 @@ function Select({
   return (
     <RadixSelect.Root onValueChange={onChange} value={value}>
       <RadixSelect.Trigger
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-zinc-300 p-3 text-zinc-800 focus:outline-none"
+        className="flex items-center justify-between gap-2 rounded-lg border border-zinc-300 p-3 text-zinc-800 focus:outline-none"
         aria-label={label}
         disabled={isLoading}
       >

@@ -36,7 +36,7 @@ function Modal({
         >
           <div
             className={cn(
-              "flex max-h-[85vh] w-[100vw] max-w-[450px] flex-col gap-4 overflow-y-auto rounded-t-2xl border border-zinc-300 bg-white p-6 shadow-lg duration-300 ease-in-out md:rounded-2xl md:rounded-t-2xl"
+              "flex max-h-[85vh] w-[100vw] flex-col gap-4 overflow-y-auto rounded-t-2xl border border-zinc-300 bg-white p-6 shadow-lg duration-300 ease-in-out md:max-w-[450px] md:rounded-2xl md:rounded-t-2xl"
             )}
           >
             <div className="flex items-center justify-between gap-2 ">

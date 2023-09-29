@@ -1,10 +1,9 @@
-import { Loader2, ListPlus } from "lucide-react";
-import type { SimpleOrganization, SimpleProject } from ".";
-import Select, { SelectItem } from "../select";
-import { cn } from "~/lib/cn";
-import OrganizationSelect from "./inputs/organizationSelect";
 import { useUser } from "@clerk/nextjs";
+import { ListPlus, Loader2 } from "lucide-react";
 import type { ProjectThemeOptions } from "~/server/db/schema/enums";
+import type { SimpleOrganization, SimpleProject } from ".";
+import ColorSelect from "./inputs/colorSelect";
+import OrganizationSelect from "./inputs/organizationSelect";
 
 interface ProjectFormProps {
   isLoading: boolean;
@@ -15,7 +14,7 @@ interface ProjectFormProps {
 }
 
 export const ProjectThemeColors: Record<
-  string,
+  ProjectThemeOptions,
   {
     light: {
       className: {
@@ -203,7 +202,6 @@ function ProjectForm({
   onSubmit,
 }: ProjectFormProps) {
   const { user } = useUser();
-  console.log(project);
   return (
     <form
       className="flex flex-col gap-2"
@@ -236,7 +234,12 @@ function ProjectForm({
         }
         value={project.description ?? ""}
       />
-      <Select
+      <ColorSelect
+        label="Theme Color"
+        onChange={(val) => onChange({ ...project, themeColor: val })}
+        value={project.themeColor}
+      />
+      {/* <Select
         isLoading={false}
         label="Theme Color"
         onChange={(val) =>
@@ -291,7 +294,7 @@ function ProjectForm({
             </SelectItem>
           ))}
         </>
-      </Select>
+      </Select> */}
       {user && (
         <OrganizationSelect
           organizations={organizations}
