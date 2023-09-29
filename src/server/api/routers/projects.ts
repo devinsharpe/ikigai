@@ -75,6 +75,9 @@ export const projectsRouter = createTRPCRouter({
                 isNull(projects.organization),
               ])
         ),
+        with: {
+          headerImage: true,
+        },
       });
       return project ?? null;
     }),
@@ -157,6 +160,7 @@ export const projectsRouter = createTRPCRouter({
         name: z.string().optional(),
         description: z.string().nullable().optional(),
         themeColor: z.enum(ProjectThemeValues).optional(),
+        imageId: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
