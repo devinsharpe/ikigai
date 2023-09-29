@@ -5,12 +5,14 @@ import {
   Cog,
   Download,
   ImageIcon,
+  ImagePlus,
   Smartphone,
 } from "lucide-react";
 import Image from "next/image";
+import type { Image as DbImage } from "~/server/db/schema/app";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import Alert from "~/components/alert";
 import CompletionGraph from "~/components/completionGraph";
@@ -18,11 +20,12 @@ import type { TaskViewOptions, TimerViewOptions } from "~/components/dashboard";
 import Tasks from "~/components/dashboard/tasks";
 import Templates from "~/components/dashboard/templates";
 import Timers from "~/components/dashboard/timers";
-import type { SimpleTask } from "~/components/forms";
+import type { SimpleOrganization, SimpleTask } from "~/components/forms";
 import ProjectForm from "~/components/forms/project";
 import TaskForm from "~/components/forms/task";
 import TimerForm from "~/components/forms/timer";
 import TimerTemplateForm from "~/components/forms/timerTemplate";
+import UnsplashForm from "~/components/forms/unsplash";
 import Loader from "~/components/loader";
 import Modal from "~/components/modal";
 import SearchNav from "~/components/searchNav";
@@ -35,6 +38,8 @@ import { useTaskControls } from "~/hooks/taskControls";
 import { useTimerControls } from "~/hooks/timerControls";
 import { useTimerTemplateControls } from "~/hooks/timerTemplateControls";
 import { formatDatetimeString } from "~/lib/date";
+import { api } from "~/utils/api";
+import type { Basic } from "unsplash-js/dist/methods/photos/types";
 
 function ProjectNotFoundPage() {
   return (
@@ -91,6 +96,10 @@ function ProjectPage() {
   const [timerView, setTimerView] = useState<TimerViewOptions>("day");
   const [isTimersOpen, setIsTimersOpen] = useState(false);
   const [isSavedTimersOpen, setIsSavedTimersOpen] = useState(false);
+  const [isUnsplashOpen, setIsUnsplashOpen] = useState(false);
+  const [headerImage, setHeaderImage] = useState<DbImage | null>(null);
+
+  const getRandomHeader = api.unsplash.random.useMutation();
 
   const router = useRouter();
   const currentOrganization = useOrganization({
@@ -116,6 +125,36 @@ function ProjectPage() {
       id: router.query.id ? (router.query.id as string) : "",
       list: true,
     }
+  );
+
+  const saveImage = api.unsplash.save.useMutation();
+  const downloadImage = api.unsplash.download.useMutation();
+
+  const saveHeaderImage = useCallback(
+    async (photo: Basic) => {
+      const image = await saveImage.mutateAsync({
+        id: photo.id,
+      });
+      await downloadImage.mutateAsync({
+        location: photo.links.download_location,
+      });
+      return image;
+    },
+    [saveImage, downloadImage]
+  );
+
+  const updateHeaderImage = useCallback(
+    async (photo: Basic) => {
+      if (!currentProject.data) return;
+      await saveHeaderImage(photo);
+      await updateProject.mutateAsync({
+        id: currentProject.data.id,
+        imageId: photo.id,
+      });
+      await currentProject.refetch();
+      setIsUnsplashOpen(false);
+    },
+    [currentProject.data, saveHeaderImage, updateProject, setIsUnsplashOpen]
   );
 
   const {
@@ -204,7 +243,7 @@ function ProjectPage() {
   );
 
   useEffect(() => {
-    if (currentProject.data)
+    if (currentProject.data) {
       setProjectDetails({
         id: currentProject.data.id,
         name: currentProject.data.name,
@@ -212,6 +251,18 @@ function ProjectPage() {
         themeColor: currentProject.data.themeColor,
         organization: currentProject.data.organization,
       });
+      if (currentProject.data.headerImage)
+        setHeaderImage(currentProject.data.headerImage);
+      else
+        getRandomHeader
+          .mutateAsync()
+          .then(async (p) => {
+            if (p) {
+              setHeaderImage((await saveHeaderImage(p))[0] ?? null);
+            }
+          })
+          .catch((err) => console.log(err));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProject.data]);
 
@@ -279,14 +330,25 @@ function ProjectPage() {
         />
         <main className="container mx-auto flex min-h-screen flex-col gap-4 pb-6 pt-20">
           <div className="md:px-2">
-            <div className="relative h-32 w-full overflow-hidden bg-zinc-200 md:h-48 md:rounded-lg">
-              <Image
-                alt="Project header image"
-                height={1080}
-                width={1920}
-                className="h-full w-full object-cover"
-                src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
-              />
+            <div className="relative h-40 w-full overflow-hidden bg-zinc-200 md:h-48 md:rounded-lg lg:h-64 xl:h-96">
+              {headerImage ? (
+                <Image
+                  alt={headerImage.description}
+                  height={1080}
+                  width={1920}
+                  className="h-full w-full object-cover"
+                  src={headerImage.htmlUrl}
+                />
+              ) : (
+                <div className="h-full w-full bg-zinc-200" />
+              )}
+              <button
+                type="button"
+                className="absolute right-2 top-2 flex items-center justify-center rounded-md bg-white/75 p-1 backdrop-blur-md transition-colors duration-150 hover:bg-white"
+                onClick={() => setIsUnsplashOpen(!isUnsplashOpen)}
+              >
+                <ImagePlus className="h-5 w-5" />
+              </button>
               <button
                 type="button"
                 className="absolute left-2 top-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/75 backdrop-blur-md transition-colors duration-150 hover:bg-white"
@@ -294,24 +356,29 @@ function ProjectPage() {
               >
                 <ChevronLeft />
               </button>
-              <div className="absolute bottom-2 right-2 flex items-center">
-                <span
-                  className="flex h-8 items-center justify-center gap-2 rounded-l-md bg-white/75 px-2 backdrop-blur-md transition-colors duration-150 hover:bg-white"
-                  onClick={() => router.back()}
-                >
-                  <ImageIcon className="h-4 w-4" />
-                  <span className="truncate text-sm">
-                    Photo by Annie Spratt on Unsplash
-                  </span>
-                </span>
-                <button
-                  type="button"
-                  className="flex h-8 w-8 items-center justify-center rounded-r-md bg-white/75 backdrop-blur-md transition-colors duration-150 hover:bg-white"
-                  onClick={() => router.back()}
-                >
-                  <Download className="h-4 w-4" />
-                </button>
-              </div>
+              {headerImage && (
+                <div className="absolute bottom-0 right-0 flex items-center">
+                  <a
+                    href={headerImage.userUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex h-6 items-center justify-center gap-2 rounded-tl-md bg-white/75 px-2 backdrop-blur-md transition-colors duration-150 hover:bg-white"
+                  >
+                    <ImageIcon className="h-3 w-3" />
+                    <span className="truncate text-xs">
+                      Photo by {headerImage.userFullName} on Unsplash
+                    </span>
+                  </a>
+                  {/* <a
+                    href={headerImage.downloadUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex h-6 w-8 items-center justify-center bg-white/75 backdrop-blur-md transition-colors duration-150 hover:bg-white"
+                  >
+                    <Download className="h-3 w-3" />
+                  </a> */}
+                </div>
+              )}
             </div>
           </div>
           <section className="flex flex-col gap-4 px-2">
@@ -458,11 +525,7 @@ function ProjectPage() {
             </Masonry>
           </ResponsiveMasonry>
           <Modal
-            isOpen={
-              createProject.isLoading ||
-              updateProject.isLoading ||
-              isProjectModalOpen
-            }
+            isOpen={isProjectModalOpen}
             onOpenChange={() => setIsProjectModalOpen(!isProjectModalOpen)}
             title={projectDetails.id ? "Edit Project" : "New Project"}
             description="Building a rocketship? Starting a new business? Renovating a home? Keeping up with your meds?"
@@ -471,7 +534,9 @@ function ProjectPage() {
               isLoading={createProject.isLoading || updateProject.isLoading}
               organizations={
                 organizationList
-                  ? organizationList.map((org) => org.organization)
+                  ? (organizationList.map(
+                      (org) => org.organization
+                    ) as SimpleOrganization[])
                   : []
               }
               project={projectDetails}
@@ -506,7 +571,9 @@ function ProjectPage() {
               }
               organizations={
                 organizationList
-                  ? organizationList.map((org) => org.organization)
+                  ? (organizationList.map(
+                      (org) => org.organization
+                    ) as SimpleOrganization[])
                   : []
               }
               onSubmit={handleTaskSubmit}
@@ -523,7 +590,9 @@ function ProjectPage() {
               isLoadingProjects={projects.isLoading || projects.isRefetching}
               organizations={
                 organizationList
-                  ? organizationList.map((org) => org.organization)
+                  ? (organizationList.map(
+                      (org) => org.organization
+                    ) as SimpleOrganization[])
                   : []
               }
               onChange={(t) => setTimerDetails({ ...timerDetails, ...t })}
@@ -552,7 +621,9 @@ function ProjectPage() {
               isLoadingProjects={projects.isLoading || projects.isRefetching}
               organizations={
                 organizationList
-                  ? organizationList.map((org) => org.organization)
+                  ? (organizationList.map(
+                      (org) => org.organization
+                    ) as SimpleOrganization[])
                   : []
               }
               onChange={(t) =>
@@ -565,6 +636,14 @@ function ProjectPage() {
               projects={projects.data ?? []}
               timerTemplate={timerTemplateDetails}
             />
+          </Modal>
+          <Modal
+            isOpen={isUnsplashOpen}
+            onOpenChange={() => setIsUnsplashOpen(!isUnsplashOpen)}
+            title="Images"
+            description="Find the right header image for your project, thanks to Unsplash"
+          >
+            <UnsplashForm onSelect={(p) => void updateHeaderImage(p)} />
           </Modal>
 
           <Alert
