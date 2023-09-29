@@ -4,6 +4,7 @@ import { timersRouter } from "~/server/api/routers/timers";
 import { timerTemplatesRouter } from "~/server/api/routers/timers/templates";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { tasksRouter } from "./routers/tasks";
+import { unsplashRouter } from "./routers/unsplash";
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   tasks: tasksRouter,
   timers: timersRouter,
   timerTemplates: timerTemplatesRouter,
+  unsplash: unsplashRouter,
 });
 
 // export type definition of API
