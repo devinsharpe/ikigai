@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { createApi, type ColorId } from "unsplash-js";
-import type { ApiResponse } from "unsplash-js/dist/helpers/response";
 import type { Random } from "unsplash-js/dist/methods/photos/types";
 import z from "zod";
 import { env } from "~/env.mjs";
@@ -36,7 +35,7 @@ export const unsplashRouter = createTRPCRouter({
         location: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       await unsplash.photos.trackDownload({
         downloadLocation: input.location,
       });
@@ -51,7 +50,7 @@ export const unsplashRouter = createTRPCRouter({
         color: z.enum(ProjectThemeValues).optional(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const photos = await unsplash.search.getPhotos({
         ...input,
         color: input.color ? themeColorIdMap[input.color] : undefined,
@@ -65,7 +64,7 @@ export const unsplashRouter = createTRPCRouter({
         id: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const photo = await unsplash.photos.get({
         photoId: input.id,
       });

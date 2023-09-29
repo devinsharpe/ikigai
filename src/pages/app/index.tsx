@@ -28,6 +28,7 @@ import { formatDatetimeString } from "~/lib/date";
 import Alert from "../../components/alert";
 import { useProjectControls } from "~/hooks/projectControls";
 import ProjectCollapsibleItem from "~/components/items/projectCollapsible";
+import type { SimpleOrganization } from "~/components/forms";
 
 function AppHomePage() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
@@ -469,7 +470,9 @@ function AppHomePage() {
           isLoading={createProject.isLoading || updateProject.isLoading}
           organizations={
             organizationList
-              ? organizationList.map((org) => org.organization)
+              ? organizationList
+                  .filter((org) => !!org.organization.slug)
+                  .map((org) => org.organization as SimpleOrganization)
               : []
           }
           project={projectDetails}
@@ -504,7 +507,9 @@ function AppHomePage() {
           }
           organizations={
             organizationList
-              ? organizationList.map((org) => org.organization)
+              ? organizationList
+                  .filter((org) => !!org.organization.slug)
+                  .map((org) => org.organization as SimpleOrganization)
               : []
           }
           onSubmit={handleTaskSubmit}
@@ -521,7 +526,9 @@ function AppHomePage() {
           isLoadingProjects={projects.isLoading || projects.isRefetching}
           organizations={
             organizationList
-              ? organizationList.map((org) => org.organization)
+              ? organizationList
+                  .filter((org) => !!org.organization.slug)
+                  .map((org) => org.organization as SimpleOrganization)
               : []
           }
           onChange={(t) => setTimerDetails({ ...timerDetails, ...t })}
@@ -548,7 +555,9 @@ function AppHomePage() {
           isLoadingProjects={projects.isLoading || projects.isRefetching}
           organizations={
             organizationList
-              ? organizationList.map((org) => org.organization)
+              ? organizationList
+                  .filter((org) => !!org.organization.slug)
+                  .map((org) => org.organization as SimpleOrganization)
               : []
           }
           onChange={(t) =>

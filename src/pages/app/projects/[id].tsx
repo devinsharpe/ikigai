@@ -3,7 +3,6 @@ import type { OrganizationMembershipPublicUserData } from "@clerk/nextjs/dist/ty
 import {
   ChevronLeft,
   Cog,
-  Download,
   ImageIcon,
   ImagePlus,
   Smartphone,
